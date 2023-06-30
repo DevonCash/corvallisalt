@@ -1,7 +1,7 @@
 ---
 import Item from "@components/Item.astro";
 import TagLine from "@components/TagLine.astro";
-import { format } from "date-fns";
+import { format, formatISO } from "date-fns";
 const { event } = Astro.props;
 const { data } = event;
 
@@ -23,7 +23,7 @@ console.log(event.data.performer);
             </a>
         </li>
         <li class="time">
-            <time>{format(event.data.startDate, "MMM d, h a")}{format(event.data.endDate, ' - h a')</time>
+            <time datetime={formatISO(event.data.startDate)}>{format(event.data.startDate, "MMM d, h a")}{format(event.data.endDate, ' - h a')</time>
         </li>
     </ul>
 </Item>

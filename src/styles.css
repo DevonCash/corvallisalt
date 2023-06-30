@@ -13,7 +13,6 @@
         --color: white;
     }
 
-
 }
 
 html,
@@ -29,6 +28,15 @@ body {
 body {
     padding: 2rem;
 }
+
+
+
+@media (max-width: 500px) {
+    body {
+        padding: 1rem;
+    }
+}
+
 
 * {
     box-sizing: border-box;

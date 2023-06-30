@@ -1,7 +1,7 @@
 name: Dummy Event
 description: This event exists to test the event collection.
-startDate: 2023-06-30T20:00:00-7:00
-endDate: 2023-06-30T22:00:00-7:00
+startDate: 2023-06-30T13:00:00Z
+endDate: 2023-06-30T15:00:00Z
 performer:
     - church-ladies
     - skeleton-boy
