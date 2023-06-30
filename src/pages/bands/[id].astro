@@ -1,0 +1,43 @@
+---
+import PrimaryLayout from "@layouts/primary.astro";
+import { getCollection } from "astro:content";
+import EventsList from "../../components/EventsList.astro";
+
+export async function getStaticPaths() {
+    const pages = await getCollection("bands");
+    return pages.map((band) => ({
+        params: { id: band.id },
+        props: { band },
+    }));
+}
+
+const { band } = Astro.props;
+
+const events = await getCollection("events", ({ data }) =>
+    data.performer.find((x) => x.id === band.id)
+);
+---
+
+<PrimaryLayout>
+    <main>
+        <hgroup>
+            <h2>
+                {band.data.name}
+            </h2>
+            <div class="tags">
+                {
+                    band.data.genre.map((genre) => (
+                        <a href={"/bands?genre=" + genre}>{genre}</a>
+                    ))
+                }
+            </div>
+        </hgroup>
+        <p>
+            {band.data.description}
+        </p>
+        { band.data.url && <div>
+            <a href={band.data.url}>{band.data.url}</a>
+        </div>}
+        <EventsList events={events} />
+    </main>
+</PrimaryLayout>

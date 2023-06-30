@@ -1,0 +1,7 @@
+---
+const { href, tags } = Astro.props;
+---
+
+<div class="tags">
+    {tags.map((tag: string) => <a href={href + tag}>{tag}</a>)}
+</div>

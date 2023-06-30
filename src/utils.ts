@@ -1,9 +1,3 @@
-export function getEventSlug(eventData: any) {
-    const day = eventData.startDate.toISOString().split('T')[0];
-    const location = eventData.location.id;
-    return `${day}-${location}`
-}
-
 /**
  * Groups items in a list based on the provided predicates.
  * @param list The list of items to group.
@@ -23,4 +17,14 @@ export function group<T>(list: T[], groupPredicates: { [key: string]: (item: T) 
         }
     }
     return output;
+}
+
+
+/**
+ * Converts a string to a URL-friendly slug.
+ * @param text The string to convert.
+ * @returns The slugified string.
+ */
+export function slugify(text: string) {
+    return text.toLowerCase().replace(/ /g, '-').replace(/[^a-z0-9-]/g, '');
 }

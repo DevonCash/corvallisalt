@@ -1,0 +1,61 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import {format, isToday, isThisWeek, startOfWeek, endOfWeek} from 'date-fns';
+import { group } from 'src/utils';
+import EventItem from './EventItem.astro';
+
+
+type Event = CollectionEntry<"events">;
+
+const events: Event[] = Astro.props.events;
+
+const timeGroups = {
+    today: (event: Event) => isToday(event.data.startDate),
+    'this week': (event: Event) => isThisWeek(event.data.startDate),
+    upcoming: (_: Event) => true, // Already filtering future events in the getCollection call
+};
+
+const grouped = group(events, timeGroups);
+
+const dates: { [key: string]: string } = {
+    today: format(new Date(), 'MMM d'),
+    'this week': format(startOfWeek(new Date()), 'MMM d') + ' - ' + format(endOfWeek(new Date()), 'MMM d'),
+}
+---
+{
+    Object.entries(grouped).map(([group, evts]) => (
+        <section>
+            <h3>
+                <span>{group} <time>{dates[group]}</time>
+                </span>
+            </h3>
+            <ul>
+                {evts.length === 0 && (
+                    <p>No other events {group}</p>
+                )}
+                {evts.map((event) => (<EventItem {event} />))}
+            </ul>
+        </section>
+    ))
+}
+
+<style>
+
+    h3 time {
+        font-size: smaller;
+        color: var(--primary);
+    }
+
+    h3 {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 2px solid currentColor;
+        justify-content: space-between;
+    }
+
+    section ul {
+        padding: 0 0.5rem;
+    }
+
+</style>

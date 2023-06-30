@@ -1,0 +1,20 @@
+---
+import PrimaryLayout from "@layouts/primary.astro";
+import { getCollection } from "astro:content";
+const venues = await getCollection("venues");
+---
+
+<PrimaryLayout>
+    <main>
+        <ul>
+            {
+                venues.map(({ data, id }) => (
+                    <li id={id}>
+                        <h4><a href={'/venues/'+id}>{data.name}</a></h4>
+                        <p>{data.description}</p>
+                    </li>
+                ))
+            }
+        </ul>
+    </main>
+</PrimaryLayout>

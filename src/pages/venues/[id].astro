@@ -1,0 +1,48 @@
+---
+import PrimaryLayout from '@layouts/primary.astro';
+import EventsList from '@components/EventsList.astro';
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    const pages = await getCollection("venues");
+    return pages.map((venue) => ({
+        params: { id: venue.id },
+        props: { venue },
+    }));
+}
+
+const { venue } = Astro.props;
+
+const events = await getCollection(
+    "events",
+    (event) => event.data.location.id === venue.id
+);
+---
+
+<PrimaryLayout>
+    <main>
+        <hgroup>
+            <h2>
+                {venue.data.name}
+            </h2>
+            <div class="tags">
+                {
+                    venue.data.keywords.map((keyword) => (
+                        <a href={"/venue?keyword=" + keyword}>{keyword}</a>
+                    ))
+                }
+            </div>
+        </hgroup>
+        <p>
+            {venue.data.description}
+        </p>
+        {
+            venue.data.url && (
+                <div>
+                    <a href={venue.data.url}>{venue.data.url}</a>
+                </div>
+            )
+        }
+        <EventsList events={events} />
+    </main>
+</PrimaryLayout>

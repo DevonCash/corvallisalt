@@ -1,21 +1,25 @@
 ---
-import { getEventSlug } from "../utils";
+import TagLine from "@components/TagLine.astro";
+import { slugify } from "src/utils";
 import { format } from "date-fns";
 const { event } = Astro.props;
 const { data } = event;
+
+console.log(event.data.performer);
 ---
 
 <li>
-    <header>
-        <a href={"/events/" + getEventSlug(data)}
-            ><h4 style="margin-bottom: 0">{data.name}</h4></a
-        >
-
+    <hgroup>
+        <h4><a href={"/events/" + event.id}>{data.name}</a></h4>
+        <TagLine tags={data.keywords} href="?keyword=" />
+    </hgroup>
+    <p>{data.description}</p>
+    <div class="time">
         {
             data?.startDate && (
                 <span>
                     <time datetime={data.startDate}>
-                        {format(data.startDate, "MMM d, h a")}
+                        {format(data.startDate, "MMM d, h")}
                     </time>
                     {data.endDate && (
                         <time datetime={data.endDate}>
@@ -25,17 +29,25 @@ const { data } = event;
                 </span>
             )
         }
-    </header>
-    <p>
-        {data.description}
-        <span>
-            {
-                data.keywords.map((keyword: string) => (
-                    <a href={"?keyword=" + keyword}>#{keyword}</a>
-                ))
-            }
-        </span>
-    </p>
+    </div>
+    {
+        data.performer && (
+            <div class="bands">
+                <small>ft.</small>
+                {data?.performer?.map((band) => (
+                    <a href={"/bands/" + band.id}>{band.id}</a>
+                ))}
+            </div>
+        )
+    }
+    {
+        data.location && (
+            <div class="venue">
+                <small style="font-size: 1.2rem;">@</small>
+                <a href={"/venues/" + data.location.id}>{data.location.id}</a>
+            </div>
+        )
+    }
     {
         data.url && (
             <p>
@@ -49,6 +61,11 @@ const { data } = event;
     li {
         list-style: none;
     }
+    li:not(:last-child) {
+        padding-bottom: 1rem;
+        margin: 1rem 0;
+        border-bottom: 3px solid #eee;
+    }
 
     li header {
         margin-top: 1rem;
@@ -59,5 +76,18 @@ const { data } = event;
 
     h4 {
         margin: 0;
+    }
+
+    .bands a:not(:last-child)::after {
+        content: " ";
+    }
+
+    small {
+        font-size: 0.8rem;
+        font-family: var(--title-font);
+    }
+
+    .keyword:not(:last-child)::after {
+        content: " ";
     }
 </style>

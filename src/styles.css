@@ -1,15 +1,10 @@
-/*
-* Lit v0.1
-* Primary Color set to: #FA0
-* Font set to: Nunito
-*/
-
 :root {
-    --font: "Open Sans", sans-serif;
-    --title-font: "Righteous", cursive;
     --primary: #fa0;
     --background: #fff;
     --light: #eee;
+
+    --font: "Open Sans", sans-serif;
+    --title-font: "Righteous", sans-serif;
 }
 
 html,
@@ -196,4 +191,12 @@ form {
 form input,
 form button {
     margin: .2rem;
+}
+
+.tags a::before {
+    content: '#';
+}
+
+.tags a:not(:last-child)::after {
+    content: ' ';
 }

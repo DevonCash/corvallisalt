@@ -1,0 +1,27 @@
+---
+import PrimaryLayout from "@layouts/primary.astro";
+import { getCollection } from "astro:content";
+
+const bands = await getCollection("bands");
+
+const sorted = bands.sort((a, b) => (a.data.name > b.data.name ? 1 : -1));
+---
+
+<PrimaryLayout>
+    <main>
+        <ul>
+            {
+                bands.map(({ id, data }) => {
+                    return (
+                        <li>
+                            <h4>
+                                <a href={"/bands/" + id}>{data.name}</a>
+                            </h4>
+                            <p>{data.description}</p>
+                        </li>
+                    );
+                })
+            }
+        </ul>
+    </main>
+</PrimaryLayout>

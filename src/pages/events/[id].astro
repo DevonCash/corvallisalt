@@ -1,0 +1,93 @@
+---
+import PrimaryLayout from "@layouts/primary.astro";
+import { getCollection, getEntries, getEntry } from "astro:content";
+
+export async function getStaticPaths() {
+    const pages = await getCollection("events");
+    return pages.map((event) => ({
+        params: { id: event.id },
+        props: { event },
+    }));
+}
+
+const { event } = Astro.props;
+const bands = await getEntries(event.data.performer);
+const venue = await getEntry(event.data.location);
+
+console.log(event);
+---
+
+<PrimaryLayout>
+    <main>
+        <hgroup>
+            <h2>{event.data.name}</h2>
+            <div class="tags">
+                {
+                    event.data.keywords.map((keyword) => (
+                        <a href={"/events?keyword=" + keyword}>{keyword}</a>
+                    ))
+                }
+            </div>
+        </hgroup>
+        <p>{event.data.description}</p>
+        <section>
+            <h3>Performers</h3>
+            <ul>
+                {
+                    bands.map((band) => (
+                        <li>
+                            <hgroup>
+                                <h4>
+                                    <a href={"/bands/" + band.id}>
+                                        {band.data.name}
+                                    </a>
+                                </h4>
+                                <div class="tags">
+                                    {band.data.genre.map((genre) => (
+                                        <a href={"/bands?genre=" + genre}
+                                            >{genre}
+                                        </a>
+                                    ))}
+                                </div>
+                            </hgroup>
+                            <p>{band.data.description}</p>
+                        </li>
+                    ))
+                }
+            </ul>
+        </section>
+        {
+            venue && (
+                <section>
+                    <h3>Location</h3>
+                    <hgroup>
+                        <h4>
+                            <a href={"/venues/" + venue.id}
+                                >{venue.data.name}
+                            </a>
+                        </h4>
+                        <div class="tags">
+                            {venue.data.keywords.map((keyword) => (
+                                <a href={"/venues?keyword=" + keyword}
+                                >{keyword}
+                                </a>
+                            ))}
+                        </div>
+                    </hgroup>
+                    <p>{venue.data.description}</p>
+                </section>
+            )
+        }
+    </main>
+</PrimaryLayout>
+
+<style>
+    ul {
+        list-style: none;
+        padding-left: 0;
+    }
+
+    li {
+        margin-bottom: 2rem;
+    }
+</style>

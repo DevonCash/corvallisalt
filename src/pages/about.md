@@ -14,7 +14,6 @@ layout: '@layouts/page.astro'
 #### Want to volunteer?
 
 - Are you into web development? This site is open source! Contribute at [Github.](https://github.com/DevonCash/corvallisalt)
-- Want to write articles? You can send in text and your author info to [contribute@corvallisalt.org](mailto:contribute@corvallisalt.org)
 - Running or attending a local event? Send the info to [contribute@corvallisalt.org](mailto:contribute@corvallisalt.org)
 - Got ideas for new services or other feedback? Send an email to [feedback@corvallisalt.org](mailto:feedback@corvallisalt.org)
 
