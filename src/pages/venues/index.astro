@@ -1,20 +1,42 @@
 ---
 import PrimaryLayout from "@layouts/primary.astro";
+import CollectionHeader from "@components/CollectionHeader.astro";
 import { getCollection } from "astro:content";
-const venues = await getCollection("venues");
+import Item from "@components/Item.astro";
+
+export const prerender = false;
+
+const collection = "venues";
+const items = await getCollection(collection);
+
+const filter = Astro.url.searchParams.get("keyword");
+const filtered = !filter
+    ? items
+    : items.filter((item) => item.data.keywords.includes(filter));
+
+const sorted = filtered.sort((a, b) => (a.data.name > b.data.name ? 1 : -1));
 ---
 
 <PrimaryLayout>
     <main>
-        <ul>
-            {
-                venues.map(({ data, id }) => (
-                    <li id={id}>
-                        <h4><a href={'/venues/'+id}>{data.name}</a></h4>
-                        <p>{data.description}</p>
-                    </li>
-                ))
-            }
-        </ul>
+        <CollectionHeader {collection} {filter}>
+            <p>
+                Missing your favorite venue? Let us know at <a
+                    href="mailto:contribute@corvallisalt.org"
+                    >contribute@corvallisalt.org</a
+                >
+            </p>
+        </CollectionHeader>
+        <section>
+            <ul>
+                {sorted.map((item) => <Item {item} />)}
+            </ul>
+        </section>
     </main>
 </PrimaryLayout>
+
+<style>
+    ul {
+        padding-left: 0;
+    }
+</style>

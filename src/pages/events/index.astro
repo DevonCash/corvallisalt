@@ -1,9 +1,9 @@
 ---
 import PrimaryLayout from "@layouts/primary.astro";
 import EventList from "@components/EventsList.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
+import { getCollection } from "astro:content";
 import { isFuture } from "date-fns";
-import EmailButton from "@components/EmailButton.astro";
+import CollectionHeader from "@components/CollectionHeader.astro";
 
 export const prerender = false;
 
@@ -11,73 +11,21 @@ const events = await getCollection("events", ({ data }) =>
     isFuture(data.startDate)
 );
 
-const keywords = new Set();
-events.forEach((event) => {
-    event.data.keywords.forEach((keyword: string) => keywords.add(keyword));
-});
-
-const keyword = Astro.url.searchParams.get("keyword");
-const filtered = !keyword
+const filter = Astro.url.searchParams.get("keyword");
+const filtered = !filter
     ? events
-    : events.filter(({ data }) => data.keywords.includes(keyword));
-
-const withoutFilter = (url: URL) => {
-    url.searchParams.delete("keyword");
-    return url;
-};
+    : events.filter(({ data }) => data.keywords.includes(filter));
 ---
 
 <PrimaryLayout>
     <main>
-        <h2>
-            <span>
-                {
-                    keyword && (
-                        <a
-                            title="Clear filter"
-                            class="active keyword"
-                            href={withoutFilter(Astro.url)}
-                        >
-                            {keyword}
-                        </a>
-                    )
-                } Events
-            </span>
-            <menu>
-                <EmailButton />
-            </menu>
-        </h2>
-        <p>Music events local to Corvallis and the surrounding areas.</p>
-        <p>
-            Don't see your event? <a href="mailto:events@corvallisalt.org"
-                >Contribute here!</a
-            >
-        </p>
-
+        <CollectionHeader collection="events" {filter}>
+            <p>Music events local to Corvallis and the surrounding areas.</p><p>
+                Don't see your event? <a href="mailto:events@corvallisalt.org"
+                    >Contribute here!</a
+                >
+            </p>
+        </CollectionHeader>
         <EventList events={filtered} />
     </main>
 </PrimaryLayout>
-
-<style>
-    
-
-    .keyword::before {
-        content: "#";
-    }
-
-    .active.keyword:hover {
-        text-decoration: line-through;
-    }
-
-    
-
-    h2 {
-        display: flex;
-        align-items: center;
-        gap: 0.5rem;
-        border-bottom: 2px solid currentColor;
-        justify-content: space-between;
-    }
-
-
-</style>

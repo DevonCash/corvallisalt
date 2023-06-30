@@ -1,4 +1,5 @@
 ---
+import Item from "@components/Item.astro";
 import TagLine from "@components/TagLine.astro";
 import { format } from "date-fns";
 const { event } = Astro.props;
@@ -7,76 +8,60 @@ const { data } = event;
 console.log(event.data.performer);
 ---
 
-<li>
-    <hgroup>
-        <h4><a href={"/events/" + event.id}>{data.name}</a></h4>
-        <TagLine tags={data.keywords} href="?keyword=" />
-    </hgroup>
-    <p>{data.description}</p>
-    <div class="time">
-        {
-            data?.startDate && (
-                <span>
-                    <time datetime={data.startDate}>
-                        {format(data.startDate, "MMM d, h")}
-                    </time>
-                    {data.endDate && (
-                        <time datetime={data.endDate}>
-                            {format(data.endDate, "- h a")}
-                        </time>
-                    )}
-                </span>
-            )
-        }
-    </div>
-    {
-        data.performer && (
-            <div class="bands">
-                <small>ft.</small>
-                {data?.performer?.map((band) => (
+<Item item={event}>
+    <ul>
+        <li class="bands">
+            {
+                event.data.performer.map((band: any) => (
                     <a href={"/bands/" + band.id}>{band.id}</a>
-                ))}
-            </div>
-        )
-    }
-    {
-        data.location && (
-            <div class="venue">
-                <small style="font-size: 1.2rem;">@</small>
-                <a href={"/venues/" + data.location.id}>{data.location.id}</a>
-            </div>
-        )
-    }
-    {
-        data.url && (
-            <p>
-                <a href={data.url}>Event Page</a>
-            </p>
-        )
-    }
-</li>
+                ))
+            }
+        </li>
+        <li class="venue">
+            <a href={"/venues/" + event.data.location.id}>
+                {event.data.location.id}
+            </a>
+        </li>
+        <li class="time">
+            <time>{format(event.data.startDate, "MMM d, h a")}{format(event.data.endDate, ' - h a')</time>
+        </li>
+    </ul>
+</Item>
 
 <style>
-    li {
+    ul {
         list-style: none;
-    }
-    li:not(:last-child) {
-        padding-bottom: 1rem;
-        margin: 1rem 0;
-        border-bottom: 3px solid #eee;
+        padding-left: 1.3rem;
     }
 
-    li header {
-        margin-top: 1rem;
-        display: flex;
-        align-items: center;
-        gap: 1rem;
-    }
-
-    h4 {
+    ul a {
         margin: 0;
     }
 
+    li {
+        position: relative;
+        margin: 0;
+    }
+
+    li::before {
+        position: absolute;
+        right: 100%;
+        bottom: 1px;
+        margin-right: 0.3rem;
+        font-size: 0.8rem;
+        font-family: var(--title-font);
+    }
+
+    .bands::before {
+        content: "ft.";
+    }
+    .venue::before {
+        content: "at";
+    }
+
+    .time::before {
+        content: "on";
+    }
     .bands a:not(:last-child)::after {
         content: " ";
     }

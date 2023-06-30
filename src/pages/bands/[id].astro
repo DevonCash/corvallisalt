@@ -1,43 +1,31 @@
 ---
 import PrimaryLayout from "@layouts/primary.astro";
-import { getCollection } from "astro:content";
-import EventsList from "../../components/EventsList.astro";
+import { getCollection, getEntry } from "astro:content";
+import EventsList from "@components/EventsList.astro";
+import Item from "@components/Item.astro";
 
-export async function getStaticPaths() {
-    const pages = await getCollection("bands");
-    return pages.map((band) => ({
-        params: { id: band.id },
-        props: { band },
-    }));
-}
+export const prerender = false;
 
-const { band } = Astro.props;
-
+const { id } = Astro.params;
+console.log(id);
+const band = await getEntry("bands", id);
 const events = await getCollection("events", ({ data }) =>
-    data.performer.find((x) => x.id === band.id)
+    data.performer.find((x) => x.id === band?.id)
 );
 ---
 
 <PrimaryLayout>
     <main>
-        <hgroup>
-            <h2>
-                {band.data.name}
-            </h2>
-            <div class="tags">
-                {
-                    band.data.genre.map((genre) => (
-                        <a href={"/bands?genre=" + genre}>{genre}</a>
-                    ))
-                }
-            </div>
-        </hgroup>
-        <p>
-            {band.data.description}
-        </p>
-        { band.data.url && <div>
-            <a href={band.data.url}>{band.data.url}</a>
-        </div>}
+        <Item item={band}>
+            {
+                band.data.url && (
+                    <div>
+                        <a href={band.data.url}>{band.data.url}</a>
+                    </div>
+                )
+            }
+        </Item>
+
         <EventsList events={events} />
     </main>
 </PrimaryLayout>

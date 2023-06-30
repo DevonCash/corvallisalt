@@ -1,0 +1,43 @@
+---
+
+interface Props {
+    collection: any;
+    filter: string | null;
+}
+
+const { collection, filter } = Astro.props;
+
+---
+
+<header>
+    <hgroup>
+        <h2>
+            {
+                filter && (
+                    <a class="filter" href={"/" + collection}>
+                        #{filter}
+                    </a>
+                )
+            }
+            <span>{collection}</span>
+        </h2>
+    </hgroup>
+    <slot/>
+</header>
+
+<style>
+    h2 {
+        text-transform: capitalize;
+    }
+
+    .filter:hover {
+        text-decoration: line-through;
+        text-decoration-color: black;
+    }
+
+    header {
+        border-bottom: 3px solid lightgray;
+        margin-bottom: 2rem;
+        padding-bottom: .5rem;
+    }
+</style>

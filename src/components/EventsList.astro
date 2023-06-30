@@ -25,10 +25,10 @@ const dates: { [key: string]: string } = {
 {
     Object.entries(grouped).map(([group, evts]) => (
         <section>
-            <h3>
-                <span>{group} <time>{dates[group]}</time>
-                </span>
-            </h3>
+            <hgroup>
+                <h3>{group}</h3>
+                <time>{dates[group]}</time>
+            </hgroup>
             <ul>
                 {evts.length === 0 && (
                     <p>No other events {group}</p>
@@ -41,21 +41,24 @@ const dates: { [key: string]: string } = {
 
 <style>
 
-    h3 time {
-        font-size: smaller;
+    hgroup time {
+        font-size: 1.5rem;
         color: var(--primary);
     }
 
-    h3 {
+    hgroup {
         display: flex;
         align-items: center;
         gap: 0.5rem;
         border-bottom: 2px solid currentColor;
-        justify-content: space-between;
     }
 
     section ul {
-        padding: 0 0.5rem;
+        padding: 1.5rem 0.5rem;
+    }
+
+    section {
+        margin-bottom: 2rem;
     }
 
 </style>

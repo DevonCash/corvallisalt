@@ -1,0 +1,36 @@
+---
+import TagLine from "./TagLine.astro";
+const { item } = Astro.props;
+---
+
+<li>
+    <hgroup>
+        <h4>
+            <a href={"/" + [item.collection, item.id].join("/")}
+                >{item.data.name}</a
+            >
+        </h4>
+        <TagLine
+            tags={item.data.keywords}
+            href={"/" + item.collection + "/?keyword="}
+        />
+    </hgroup>
+    <p>{item.data.description}</p>
+    <slot />
+</li>
+
+<style>
+    li hgroup {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    li {
+        list-style: none;
+    }
+    li:not(:last-child) {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid lightgray;
+    }
+</style>

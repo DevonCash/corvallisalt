@@ -6,7 +6,7 @@ const bands = defineCollection({
         name: z.string(),
         description: z.string(),
         url: z.string().url().optional(),
-        genre: z.array(z.string()).optional(),
+        keywords: z.array(z.string()).optional(),
         members: z.array(z.string()).optional(),
     })
 }
@@ -18,17 +18,6 @@ const venues = defineCollection({
         name: z.string(),
         description: z.string(),
         url: z.string().url(),
-        keywords: z.array(z.string()),
-    })
-});
-
-const articles = defineCollection({
-    type: 'content',
-    schema: z.object({
-        title: z.string(),
-        author: z.array(reference('contributors')),
-        datePublished: z.date().optional(),
-        abstract: z.string().optional(),
         keywords: z.array(z.string()),
     })
 });
@@ -60,7 +49,6 @@ const events = defineCollection({
 });
 
 export const collections = {
-    articles,
     events,
     bands,
     venues,
