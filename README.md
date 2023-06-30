@@ -1,5 +1,8 @@
 # Astro Starter Kit: Minimal
 
+TODO:
+  Dark Mode
+
 ```
 npm create astro@latest -- --template minimal
 ```

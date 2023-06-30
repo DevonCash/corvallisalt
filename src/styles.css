@@ -7,9 +7,19 @@
     --title-font: "Righteous", sans-serif;
 }
 
+@media (prefers-color-scheme: dark) {
+    :root{
+        --background: #222;
+        --color: white;
+    }
+
+
+}
+
 html,
 body {
     font: 1em/1.6 var(--font);
+    color: var(--color);
     background: var(--background);
     font-size: 16px;
     padding: 0;
