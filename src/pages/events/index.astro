@@ -5,6 +5,8 @@ import { getCollection, type CollectionEntry } from "astro:content";
 import { isFuture } from "date-fns";
 import EmailButton from "@components/EmailButton.astro";
 
+export const prerender = false;
+
 const events = await getCollection("events", ({ data }) =>
     isFuture(data.startDate)
 );

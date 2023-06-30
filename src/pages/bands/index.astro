@@ -11,7 +11,7 @@ const sorted = bands.sort((a, b) => (a.data.name > b.data.name ? 1 : -1));
     <main>
         <ul>
             {
-                bands.map(({ id, data }) => {
+                sorted.map(({ id, data }) => {
                     return (
                         <li>
                             <h4>
