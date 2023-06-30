@@ -3,12 +3,17 @@ import PrimaryLayout from "@layouts/primary.astro";
 import EventsList from "@components/EventsList.astro";
 import Item from "@components/Item.astro";
 import { getCollection, getEntry } from "astro:content";
+import type { CollectionEntry } from "astro:content";
 
 export const prerender = false;
 
-const { id } = Astro.params;
+interface Params {
+    id?: string;
+}
 
-const venue = await getEntry("venues", id);
+const { id } = Astro.params as Params;
+
+const venue: CollectionEntry<"venues"> = await getEntry("venues", id);
 const events = await getCollection(
     "events",
     (event) => event.data.location.id === venue.id
