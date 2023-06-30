@@ -1,0 +1,31 @@
+---
+import RSSIcon from "src/icons/rss.svg?raw";
+
+const { feed } = Astro.props;
+---
+
+<div>
+    <button class="clear">
+        <Fragment set:html={RSSIcon} />
+    </button>
+    <dialog>
+        <form>
+            <h2>Subscribe to RSS feed</h2>
+            <p>
+                Subscribe to the RSS feed to get updates when new posts are
+                published.
+            </p>
+            <p>
+                <a href={feed} target="_blank" rel="noopener noreferrer"
+                    >RSS feed</a
+                >
+            </p>
+        </form>
+    </dialog>
+</div>
+<style>
+    div,button {
+        margin: 0;
+    }
+    
+</style>

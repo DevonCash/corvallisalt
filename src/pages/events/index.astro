@@ -1,0 +1,137 @@
+---
+import PrimaryLayout from "@layouts/primary.astro";
+import EventItem from "@components/EventItem.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { format, isToday, isThisWeek, isFuture, startOfWeek, endOfWeek } from "date-fns";
+import { group } from "src/utils";
+import RssButton from "@components/RssButton.astro";
+import EmailButton from "@components/EmailButton.astro";
+
+type Event = CollectionEntry<"events">;
+
+const events = await getCollection("events", ({ data }) =>
+    isFuture(data.startDate)
+);
+
+const keywords = new Set();
+events.forEach((event) => {
+    event.data.keywords.forEach((keyword: string) => keywords.add(keyword));
+});
+
+const keyword = Astro.url.searchParams.get("keyword");
+const filtered = !keyword
+    ? events
+    : events.filter(({ data }) => data.keywords.includes(keyword));
+
+const timeGroups = {
+    today: (event: Event) => isToday(event.data.startDate),
+    'this week': (event: Event) => isThisWeek(event.data.startDate),
+    upcoming: (event: Event) => true, // Already filtering future events in the getCollection call
+};
+
+const grouped = group(filtered, timeGroups);
+
+const dates = {
+    today: format(new Date(), 'MMM d'),
+    'this week': format(startOfWeek(new Date()), 'MMM d') + ' - ' + format(endOfWeek(new Date()), 'MMM d'),
+}
+
+const withoutFilter = (url: URL) => {
+    url.searchParams.delete("keyword");
+    return url;
+};
+console.log(keywords);
+---
+
+<script define:vars={{ events }}>
+console.log(events);
+</script>
+<PrimaryLayout>
+    <aside style="float: right; margin: 0 1rem;">
+        <h3>Filter by keyword</h3>
+            <div class="filters">
+                {Array.from(keywords).map((keyword) => (
+                    <a class="btn keyword" href={Astro.url.href.split("?")[0] + "?keyword=" + keyword}>{keyword}</a>
+                    ))}
+            </div>
+            <a href={Astro.url.href.split("?")[0]}>Clear Filter</a>
+    </aside>
+    <main>
+            <h2>
+                <span>
+                    {keyword && <a title="Clear filter" class="active keyword" href={withoutFilter(Astro.url)}>{keyword}</a>} Events 
+                </span>
+                <menu>
+                    <EmailButton/>
+                    <RssButton/>
+            </menu>
+            
+            </h2>
+        <p>Music events local to Corvallis and the surrounding areas.</p><p>
+        </p>Don't see your event? 
+        <a href="mailto:events@corvallisalt.org">
+            Contribute here!
+        </a>
+
+        {
+            Object.entries(grouped).map(([group, evts]) => (
+                <section>
+                    <h3>
+                        <span>{group} <time>{dates[group]}</time>
+                        </span>
+                        <menu><EmailButton/><RssButton/></menu></h3>
+                    <ul>
+                        {evts.length === 0 && (
+                            <p>No other events {group}</p>
+                        )}
+                        {evts.map((event) => (<EventItem {event} />))}
+                    </ul>
+                </section>
+            ))
+        }
+
+    </main>
+</PrimaryLayout>
+
+<style>
+    .filters button {
+    }
+    .filters button:hover {
+    }
+    
+    hgroup em {
+        color: var(--primary);
+        font-style: normal;
+    }
+    
+    .keyword::before{
+        content: '#'
+    }
+
+    .active.keyword:hover {
+        text-decoration: line-through;
+    }
+
+
+    h3 time {
+        font-size: smaller;
+        color: var(--primary);
+    }
+
+    h2, h3{
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        border-bottom: 2px solid currentColor;
+        justify-content: space-between;
+    }
+
+    h2 menu,
+    h3 menu {
+        margin: 0;
+        padding: 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+    }
+</style>

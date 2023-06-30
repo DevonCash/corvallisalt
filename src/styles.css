@@ -1,0 +1,199 @@
+/*
+* Lit v0.1
+* Primary Color set to: #FA0
+* Font set to: Nunito
+*/
+
+:root {
+    --font: "Open Sans", sans-serif;
+    --title-font: "Righteous", cursive;
+    --primary: #fa0;
+    --background: #fff;
+    --light: #eee;
+}
+
+html,
+body {
+    font: 1em/1.6 var(--font);
+    background: var(--background);
+    font-size: 16px;
+    padding: 0;
+    margin: 0;
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+*+* {
+    margin: .5em 0;
+}
+
+pre {
+    overflow: auto
+}
+
+
+.outline:focus,
+hr {
+    outline: 0;
+    border: solid var(--primary);
+}
+
+.outline,
+pre {
+    padding: 1em;
+    border: solid var(--light);
+}
+
+
+main {
+    padding: 0 1rem;
+    margin: auto;
+    width: fit-content;
+    max-width: 650px;
+}
+
+
+h6 {
+    font: 100 1em var(--title-font);
+}
+
+h5 {
+    font: 100 1.2em var(--title-font);
+}
+
+h3 {
+    font: 100 2em var(--title-font);
+}
+
+h4 {
+    font: 100 1.5em var(--title-font);
+}
+
+h2 {
+    font: 100 2.2em var(--title-font);
+}
+
+h1 {
+    font: 100 2.5em var(--title-font);
+}
+
+a {
+    color: var(--primary);
+    text-decoration: none;
+}
+
+hgroup>* {
+    margin: 0;
+}
+
+hgroup :not(:first-child) {
+    margin-top: 0;
+}
+
+.btn.primary,
+button.primary {
+    --color: white;
+    --background: var(--primary);
+    background: var(--primary);
+    border: solid var(--primary);
+}
+
+td,
+th {
+    padding: 1em;
+    text-align: left;
+    border-bottom: solid var(--light);
+}
+
+.btn,
+button {
+    --color: black;
+    --background: transparent;
+    transition: color, background, border-color;
+    transition-duration: .1s;
+    transition-timing-function: ease-in-out;
+    position: relative;
+    padding: .5em;
+    color: var(--color);
+    background: var(--background);
+    border: solid 4px;
+    border-color: var(--color);
+    
+    text-transform: uppercase;
+    font: 1em var(--title-font);
+}
+
+.btn.clear,
+button.clear {
+    color: var(--color);
+    background-color: transparent;
+    border-color: transparent;
+}
+
+.btn:hover,
+button:hover {
+    --color: white;
+    --background: black;
+    border-color: var(--background);
+}
+
+a,
+button {
+    cursor: pointer;
+}
+
+nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+button svg {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+dialog {
+    margin: auto;
+}
+
+dialog {
+    display: none;
+}
+
+dialog[open] {
+    font-size: 1rem;
+    display: flex;
+    padding: 0;
+    text-transform: none;
+    font-family: var(--font);
+    cursor: auto;
+}
+
+dialog form {
+    display: flex;
+    flex-direction: column;
+    background: var(--background);
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    box-shadow: 0 0 0.5rem var(--shadow);
+}
+
+input {
+    font-size: 1.4rem;
+    padding: 0.5rem;
+}
+
+form {
+    padding: 2rem;
+}
+
+form input,
+form button {
+    margin: .2rem;
+}

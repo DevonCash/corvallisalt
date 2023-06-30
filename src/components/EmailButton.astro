@@ -1,0 +1,26 @@
+---
+import EmailIcon from "src/icons/email.svg?raw";
+---
+
+<div>
+    <button class="clear">
+        <Fragment set:html={EmailIcon} />
+    </button>
+    <dialog>
+        <form>
+            <h2>Subscribe to Email List</h2>
+            <p>
+                Subscribe to the RSS feed to get email when new posts are
+                published.
+            </p>
+            <input type="email" placeholder="Email" />
+            <button>Subscribe</button>
+        </form>
+    </dialog>
+</div>
+<style>
+    div,
+    button {
+        margin: 0;
+    }
+</style>

@@ -1,15 +1,24 @@
 ---
+import PrimaryLayout from "@layouts/primary.astro";
 ---
 
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="viewport" content="width=device-width" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro</title>
-	</head>
-	<body>
-		<h1>Astro</h1>
-	</body>
-</html>
+<PrimaryLayout>
+	<main>
+		<section>
+			<h3>Upcoming Events</h3>
+			<ul>
+				<li>Event 1</li>
+				<li>Event 2</li>
+				<li>Event 3</li>
+			</ul>
+		</section>
+		<section>
+			<h3>Recent Posts</h3>
+			<ul>
+				<li>Post 1</li>
+				<li>Post 2</li>
+				<li>Post 3</li>
+			</ul>
+		</section>
+	</main>
+</PrimaryLayout>

@@ -1,0 +1,20 @@
+---
+import { getEventSlug } from "src/utils";
+import { getCollection } from "astro:content";
+
+export async function getStaticPaths() {
+    const pages = await getCollection("events");
+    return pages.map(({ id, data }) => ({
+        params: {
+            slug: getEventSlug(data),
+        },
+        props: { data },
+    }));
+}
+
+const { data } = Astro.props;
+---
+
+<pre>
+    {JSON.stringify(data)}
+</pre>

@@ -1,0 +1,63 @@
+---
+import { getEventSlug } from "../utils";
+import { format } from "date-fns";
+const { event } = Astro.props;
+const { data } = event;
+---
+
+<li>
+    <header>
+        <a href={"/events/" + getEventSlug(data)}
+            ><h4 style="margin-bottom: 0">{data.name}</h4></a
+        >
+
+        {
+            data?.startDate && (
+                <span>
+                    <time datetime={data.startDate}>
+                        {format(data.startDate, "MMM d, h a")}
+                    </time>
+                    {data.endDate && (
+                        <time datetime={data.endDate}>
+                            {format(data.endDate, "- h a")}
+                        </time>
+                    )}
+                </span>
+            )
+        }
+    </header>
+    <p>
+        {data.description}
+        <span>
+            {
+                data.keywords.map((keyword: string) => (
+                    <a href={"?keyword=" + keyword}>#{keyword}</a>
+                ))
+            }
+        </span>
+    </p>
+    {
+        data.url && (
+            <p>
+                <a href={data.url}>Event Page</a>
+            </p>
+        )
+    }
+</li>
+
+<style>
+    li {
+        list-style: none;
+    }
+
+    li header {
+        margin-top: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    h4 {
+        margin: 0;
+    }
+</style>

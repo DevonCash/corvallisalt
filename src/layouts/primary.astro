@@ -1,0 +1,133 @@
+---
+import "../styles.css";
+
+const nav = [
+    {
+        href: "/events",
+        text: "Events",
+    },
+    {
+        href: "/articles",
+        text: "Articles",
+    },
+    {
+        href: "/about",
+        text: "About",
+    },
+];
+---
+
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+        <meta name="viewport" content="width=device-width" />
+        <meta name="generator" content={Astro.generator} />
+
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+        <link
+            href="https://fonts.googleapis.com/css2?family=Open+Sans&family=Righteous&display=swap"
+            rel="stylesheet"
+        />
+
+        <title>Astro</title>
+    </head>
+    <body>
+        <script>
+            const dialogs: HTMLDialogElement[] = Array.from(
+                document.querySelectorAll("button + dialog")
+            );
+
+            dialogs.forEach((dialog) => {
+                console.log(dialog);
+                dialog.previousElementSibling?.addEventListener("click", () => {
+                    dialog.showModal();
+                });
+                dialog.addEventListener("click", (event) => {
+                    if (event.target === dialog) {
+                        dialog.close();
+                    }
+                });
+            });
+        </script>
+
+        <header>
+            <nav>
+                <a href="/">
+                    <h1>Corvallis<span>Alt</span></h1>
+                </a>
+                <ul>
+                    {
+                        nav.map(({ href, text }) => (
+                            <li>
+                                <a href={href}>{text}</a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </nav>
+        </header>
+        <slot />
+        <footer>
+            <nav>
+                <ul>
+                    {
+                        nav.map(({ href, text }) => (
+                            <li>
+                                <a href={href}>{text}</a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </nav>
+        </footer>
+    </body>
+</html>
+
+<style>
+    nav {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        padding: 2rem;
+    }
+
+    nav h1 {
+        margin: 0;
+        white-space: nowrap;
+    }
+
+    nav ul {
+        font-size: larger;
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    h1 {
+        color: black;
+    }
+    h1 span {
+        color: var(--primary);
+        text-transform: uppercase;
+    }
+
+    footer {
+        background-color: var(--primary);
+        color: white;
+        padding: 2rem;
+        margin-top: 5rem;
+        margin-bottom: -2rem;
+    }
+
+    footer a {
+        color: var(--background);
+    }
+    footer nav {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
