@@ -1,7 +1,7 @@
 ---
 import PrimaryLayout from "@layouts/primary.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
-import { parse,  isBefore, subMonths, addMonths } from "date-fns";
+import { parse,  isBefore, subMonths, addMonths, format as rawFormat } from "date-fns";
 import CollectionHeader from "@components/CollectionHeader.astro";
 import MonthCalendar from "@components/MonthCalendar.svelte";
 import EventItem from "@components/EventItem.astro";
@@ -78,7 +78,7 @@ const byDay = Object.entries(
             
             {byDay.map(([day, events]) => (
                 <section>
-                    <h3 id={format(day, "dd")}>{format(day, "EEEE, MMMM do")}</h3>
+                    <h3 id={rawFormat(day, "dd")}>{rawFormat(day, "EEEE, MMMM do")}</h3>
                     <ul>
                         {events.map((event) => (
                             <EventItem {event} />
