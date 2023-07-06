@@ -62,19 +62,20 @@ for(const event of events) {
         
         }
 
-        // Flash the section header for the day you clicked an anchor for
-        window.addEventListener('hashchange', () => {
+        const flashHeading = () => {
+            console.log('flash');
             const hash = window.location.hash;
-            if(hash) {
-                const date = DateTime.fromFormat(hash.slice(1), 'dd');
-                const section = document.querySelector(`section[data-datetime="${date.toISO()}"]`);
-                if(section) {
-                    section.classList.add('flash');
-                    setTimeout(() => section.classList.remove('flash'), 1000);
-                }
-            }
-        })
-            </script>
+            if(!hash) return;
+            const heading = document.getElementById(hash.slice(1));
+            if(!heading) return;
+
+            heading.classList.add('flash');
+            setTimeout(() => heading.classList.remove('flash'), 1000);
+        }
+        // Flash the section header for the day you clicked an anchor for
+        window.addEventListener('hashchange', flashHeading);
+        flashHeading();
+    </script>
     <CollectionHeader collection="events" {filter}>
         <span slot="title"
             >Events <time>{month.toFormat('LLLL yyyy')}</time>
@@ -138,16 +139,22 @@ for(const event of events) {
             color: inherit;
         }
     }
-    .flash h3 {
+    .flash {
         animation: flash 1s;
     }
 
     section.today h3::after {
         content: ' (today)';
     }
+
+    main :first-child h3 {
+        margin-top: 0;
+    }
+
 </style>
 
 <style>
+    
     div {
         flex: auto;
         display: grid;

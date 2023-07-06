@@ -38,10 +38,18 @@
   const times = document.querySelectorAll("td time");
   for (const t of times) {
     const day = DateTime.fromISO(t.getAttribute("datetime"));
-    if(day.hasSame(DateTime.now(), 'day')) {
-      t.closest("td").classList.add("today");
-      break;
-    }
+    if(!day.hasSame(DateTime.now(), 'day')) continue;
+
+    t.closest("td").classList.add("today");
+    if(t.parentElement.tagName === 'A') break;
+
+    // Ensure the entry for today has a link
+    const a = document.createElement("a");
+    a.href = "#" + day.toFormat("dd");
+    a.append(t.cloneNode(true));
+    t.replaceWith(a);
+
+    break;
   }
 </script>
 
