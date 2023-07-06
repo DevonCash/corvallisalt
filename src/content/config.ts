@@ -1,5 +1,6 @@
 import { z, defineCollection, reference } from "astro:content";
 import { parse } from "date-fns";
+import { zonedTimeToUtc } from "date-fns-tz";
 
 const keyword = z.string().regex(/^[a-z0-9-]+$/g);
 
@@ -31,11 +32,11 @@ const contributors = defineCollection({
   }),
 });
 
-const stringToDate = z.string().regex(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g).transform((arg) => {
-  const date = parse((arg + '-07') as string, "yyyy-MM-dd HH:mmx", new Date());
-  console.log(arg, date);
-  return date;
-});
+const stringToDate = z
+  .string()
+  .regex(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g)
+  .transform((arg) => zonedTimeToUtc(arg, "America/Los_Angeles"));
+  
 const events = defineCollection({
   type: "data",
   schema: z.object({
@@ -51,10 +52,12 @@ const events = defineCollection({
     endDate: stringToDate.optional(),
 
     image: z.string().url().optional(),
-    cost: z.object({
+    cost: z
+      .object({
         price: z.number().min(0),
-        suggested: z.boolean().optional()
-    }).optional(),
+        suggested: z.boolean().optional(),
+      })
+      .optional(),
     keywords: z.array(keyword),
   }),
 });
