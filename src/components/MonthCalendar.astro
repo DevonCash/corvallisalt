@@ -26,11 +26,6 @@
     const day = DateTime.fromJSDate(event);
     byDay.set(day.day, [...(byDay.get(day.day) || []), event]);
   }
-  // const byDay = new Map<DateTime, Event[]>();
-  // for (const event of events) {
-  //   const day = startOfDay(;
-  //   byDay.set(day, [...(byDay.get(day) || []), event]);
-  // }
 ---
 <table>
 
@@ -38,16 +33,17 @@
   import { DateTime } from 'luxon';
   // Mark today
   const times = document.querySelectorAll("td time");
+  const today = DateTime.now().setZone(import.meta.env.VITE_IANA_TIMEZONE as string);
   for (const t of times) {
     const day = DateTime.fromISO(t.getAttribute("datetime"));
-    if(!day.hasSame(DateTime.now(), 'day')) continue;
+    if(!today.hasSame(day, 'day')) continue;
 
     t.closest("td").classList.add("today");
     if(t.parentElement.tagName === 'A') break;
 
     // Ensure the entry for today has a link
     const a = document.createElement("a");
-    a.href = "#" + day.toFormat("dd");
+    a.href = "#" + today.toFormat("dd");
     a.append(t.cloneNode(true));
     t.replaceWith(a);
 
