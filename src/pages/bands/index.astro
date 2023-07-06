@@ -8,7 +8,7 @@ export const prerender = false;
 
 const bands = await getCollection("bands");
 
-const filter = Astro.url.searchParams.get("keyword");
+const filter = Astro.url.searchParams.get("keywords");
 const filtered = !filter
     ? bands
     : bands.filter((band) => band.data.keywords.includes(filter));

@@ -9,7 +9,7 @@ export const prerender = false;
 const collection = "venues";
 const items = await getCollection(collection);
 
-const filter = Astro.url.searchParams.get("keyword");
+const filter = Astro.url.searchParams.get("keywords");
 const filtered = !filter
     ? items
     : items.filter((item) => item.data.keywords.includes(filter));
