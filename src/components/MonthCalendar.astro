@@ -37,7 +37,7 @@
   // Mark today
   const times = document.querySelectorAll("td time");
   for (const t of times) {
-    const day = DateTime.fromISO(t.getAttribute("datetime"));
+    const day = DateTime.fromISO(t.getAttribute("datetime")).setZone("local");
     if(!day.hasSame(DateTime.now(), 'day')) continue;
 
     t.closest("td").classList.add("today");
