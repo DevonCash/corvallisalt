@@ -1,0 +1,210 @@
+---
+import PrimaryLayout from "@layouts/primary.astro";
+import { getCollection, type CollectionEntry } from "astro:content";
+import { isSameMonth, parse, format, isBefore, subMonths, addMonths, parseISO } from "date-fns";
+import CollectionHeader from "@components/CollectionHeader.astro";
+import MonthCalendar from "@components/MonthCalendar.svelte";
+import EventItem from "@components/EventItem.astro";
+import { addQueryParam, queryEvents } from "src/utils";
+export const prerender = false;
+
+type Event = CollectionEntry<"events">;
+
+if (!Astro.params.month) {
+    return Astro.redirect("/events");
+}
+
+const month = parse(Astro.params.month, "yyyy-MM", new Date());
+const lastMonth = subMonths(month, 1);
+const nextMonth = addMonths(month, 1);
+
+const url = new URL(Astro.url);
+url.searchParams.append('in', Astro.params.month);
+const events = await queryEvents(url.searchParams)
+
+console.log(events);
+
+const filter = Astro.url.searchParams.get("keywords");
+
+const keywords = Array.from(new Set((await getCollection('events')).map(event => event.data.keywords).flat()))
+
+type DaySchedule = [Date, Event[]];
+const byDay = Object.entries(
+    events.reduce((acc: { [key: string]: Event[] }, event) => {
+        const day = format(event.data.startDate, "yyyy-MM-dd");
+        return {
+            ...acc,
+            [day]: [...(acc[day] || []), event],
+        };
+    }, {})
+)
+    .map(
+        ([day, events]): DaySchedule => [
+            parse(day, "yyyy-MM-dd", new Date()),
+            events,
+        ]
+    ) // Re-parse keys as dates;
+    .sort((a, b) => (isBefore(a[0], b[0]) ? -1 : 1)); // Sort by date
+
+---
+
+<PrimaryLayout>
+    <CollectionHeader collection="events" {filter}>
+        <span slot="title"
+            >Events <time>{format(month, "MMMM yyyy")}</time></span
+        >
+    </CollectionHeader>
+        <nav>
+            <a href={format(lastMonth, "'/events/'yyyy-MM")}>
+                &larr; {format(lastMonth, "MMMM")}
+            </a>
+            <a href={format(nextMonth, "'/events/'yyyy-MM")}>
+                {format(nextMonth, "MMMM")} &rarr;
+            </a>
+        </nav>
+    <div>
+        <aside id="calendar">
+            <MonthCalendar
+                monthOf={month}
+                events={events.map((event) => event.data.startDate)}
+            />
+        </aside>
+        <main>
+            {events.length === 0 && (
+                <article style="text-align:center;">
+                <p>No events found for this month.</p>
+            </article>
+            )}
+            
+            {byDay.map(([day, events]) => (
+                <section>
+                    <h3 id={format(day, "dd")}>{format(day, "EEEE, MMMM do")}</h3>
+                    <ul>
+                        {events.map((event) => (
+                            <EventItem {event} />
+                        ))}
+                    </ul>
+                </section>
+            ))}
+        </main>
+        <aside id="sidebar">
+            {keywords.length > 0 &&
+         (   <article id="keywords">
+                <h5>Keywords</h5>
+                <ul>
+                    {keywords.map((keyword) => (
+                            <a href={addQueryParam(Astro.url, 'keyword', keyword)}>{keyword}</a>
+                    ))}
+                </ul>
+            </article>)
+        }
+            <article>
+                <h5>Don't see your event?</h5>
+                <p>
+                    Let us know at <a href="mailto:contribute@corvallisalt.org"
+                        >contribute@corvallisalt.org</a
+                    >
+                </p>
+            </article>
+        </aside>
+    </div>
+</PrimaryLayout>
+
+<style>
+    div {
+        flex: auto;
+        display: grid;
+        grid-template-areas: "calendar main aside";
+        grid-template-columns: 1fr 2fr 1fr;
+        align-items: start;
+        gap: 2rem;
+    }
+
+
+
+    main {
+        grid-area: main;
+        flex: 1 0 300px;
+        margin: 0;
+    }
+
+    main section:first-child h3 {
+        margin-top: 0;
+    }
+
+    @media( max-width: 1080px) {
+        div {
+            grid-template-areas: "calendar main" "aside main";
+            grid-template-columns: 1fr 2fr;
+            grid-template-rows: auto 1fr;
+        }
+    }
+
+    @media (max-width: 800px) {
+        div {
+            grid-template-areas: "calendar" "main" "aside";
+            grid-template-columns: 1fr;
+        }
+    }
+
+    #calendar {
+        grid-area: calendar;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    #sidebar {
+        grid-area: aside;
+        display: flex;
+        flex-direction: column;
+        margin: 0;
+    }
+
+    article {
+        border: 3px solid var(--light);
+        padding: 1.5rem 1rem;
+    }
+
+    article :first-child {
+        margin-top: 0;
+    }
+
+    main ul {
+        padding: 0 1rem;
+    }
+
+    time {
+        color: var(--primary);
+        font-size: smaller;
+        font-family: var(--font);
+        white-space: nowrap;
+    }
+
+    main {
+        width: unset;
+        min-width: 300px;
+    }
+
+    #keywords ul {
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+        padding: 0;
+
+    }
+    #keywords a {
+        margin: 0.2rem;
+    }
+    #keywords a::before {
+        content: "#";
+    }
+
+    nav {
+        margin-top :-2rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+</style>
+

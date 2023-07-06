@@ -23,17 +23,23 @@ body {
     font-size: 16px;
     padding: 0;
     margin: 0;
+    min-height: 100vh;
 }
 
 body {
+    max-width: 1800px;
+    margin: auto;
     padding: 2rem;
 }
 
-
+a:hover {
+    opacity: .5;
+}
 
 @media (max-width: 500px) {
     body {
-        padding: 1rem;
+        /* padding: 1.5rem; */
+        font-size: 14px;
     }
 }
 
@@ -64,11 +70,6 @@ pre {
 }
 
 
-main {
-    margin: auto;
-    width: 500px;
-    max-width: 100%;
-}
 
 h6 {
     font: 100 1em var(--title-font);

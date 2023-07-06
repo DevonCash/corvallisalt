@@ -1,6 +1,6 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import {format, isToday, isThisWeek, startOfWeek, endOfWeek} from 'date-fns';
+import {format, isToday, isThisWeek, isThisMonth, startOfWeek, endOfWeek} from 'date-fns';
 import { group } from 'src/utils';
 import EventItem from './EventItem.astro';
 
@@ -8,11 +8,10 @@ import EventItem from './EventItem.astro';
 type Event = CollectionEntry<"events">;
 
 const events: Event[] = Astro.props.events;
-
 const timeGroups = {
     today: (event: Event) => isToday(event.data.startDate),
     'this week': (event: Event) => isThisWeek(event.data.startDate),
-    upcoming: (_: Event) => true, // Already filtering future events in the getCollection call
+    'this month': (event: Event) => isThisMonth(event.data.startDate), // Already filtering future events in the getCollection call
 };
 
 const grouped = group(events, timeGroups);
@@ -20,19 +19,17 @@ const grouped = group(events, timeGroups);
 const dates: { [key: string]: string } = {
     today: format(new Date(), 'MMM d'),
     'this week': format(startOfWeek(new Date()), 'MMM d') + ' - ' + format(endOfWeek(new Date()), 'MMM d'),
+    'this month': format(new Date(), 'MMMM'),
 }
 ---
 {
-    Object.entries(grouped).map(([group, evts]) => (
+    Object.entries(grouped).filter(([_, evts]) => evts.length > 0).map(([group, evts]) => (
         <section>
             <hgroup>
                 <h3>{group}</h3>
                 <time>{dates[group]}</time>
             </hgroup>
             <ul>
-                {evts.length === 0 && (
-                    <p>No other events {group}</p>
-                )}
                 {evts.map((event) => (<EventItem {event} />))}
             </ul>
         </section>

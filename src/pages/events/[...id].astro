@@ -8,17 +8,18 @@ export const prerender = true;
 
 export async function getStaticPaths() {
     const pages = await getCollection("events");
+    console.log(pages);
     return pages.map((event) => ({
         params: { id: event.id },
         props: { event },
     }));
 }
 
+
 const { event } = Astro.props;
 const bands = await getEntries(event.data.performer);
 const venue = await getEntry(event.data.location);
 
-console.log(event);
 ---
 
 <PrimaryLayout>

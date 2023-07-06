@@ -1,11 +1,15 @@
 ---
 import Item from "@components/Item.astro";
-import TagLine from "@components/TagLine.astro";
+import { getEntries } from "astro:content";
 import { format, formatISO } from "date-fns";
 const { event } = Astro.props;
-const { data } = event;
 
-console.log(event.data.performer);
+if (!event.data.name) {
+    const bands = await getEntries(event.data.performer);
+    event.data.name = bands.map((band: any) => band.data.name).join(", ");
+}
+
+const cost = event.data.cost?.price ? "$" + event.data.cost.price : "Free";
 ---
 
 <Item item={event}>
@@ -23,7 +27,17 @@ console.log(event.data.performer);
             </a>
         </li>
         <li class="time">
-            <time datetime={formatISO(event.data.startDate)}>{format(event.data.startDate, "MMM d, h a")}{format(event.data.endDate, ' - h a')</time>
+            <time
+                datetime={formatISO(event.data.startDate)}
+                set:html={format(
+                    event.data.startDate,
+                    "E '<span>'MMM d'</span>', h a"
+                )}
+            />
+        </li>
+        <li class="cost">
+            {cost}
+            {event.data?.cost?.suggested && " (suggested)"}
         </li>
     </ul>
 </Item>
@@ -36,17 +50,20 @@ console.log(event.data.performer);
 
     ul a {
         margin: 0;
+        display: inline-block;
+        margin-right: 0.3rem;
     }
 
     li {
         position: relative;
         margin: 0;
+        margin-left: 1rem;
     }
 
     li::before {
         position: absolute;
         right: 100%;
-        bottom: 1px;
+        top: 3.5px;
         margin-right: 0.3rem;
         font-size: 0.8rem;
         font-family: var(--title-font);
@@ -66,6 +83,10 @@ console.log(event.data.performer);
         content: " ";
     }
 
+    .cost::before {
+        content: "for";
+    }
+
     small {
         font-size: 0.8rem;
         font-family: var(--title-font);
@@ -73,5 +94,11 @@ console.log(event.data.performer);
 
     .keyword:not(:last-child)::after {
         content: " ";
+    }
+</style>
+
+<style is:global>
+    .time span {
+        color: var(--primary);
     }
 </style>

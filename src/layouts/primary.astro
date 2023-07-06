@@ -19,6 +19,7 @@ const nav = [
         text: "About",
     },
 ];
+const active = nav.find(({ href }) => Astro.url.pathname.startsWith(href));
 ---
 
 <html lang="en">
@@ -38,24 +39,6 @@ const nav = [
         <title>CorvallisALT</title>
     </head>
     <body>
-        <script>
-            const dialogs: HTMLDialogElement[] = Array.from(
-                document.querySelectorAll("button + dialog")
-            );
-
-            dialogs.forEach((dialog) => {
-                console.log(dialog);
-                dialog.previousElementSibling?.addEventListener("click", () => {
-                    dialog.showModal();
-                });
-                dialog.addEventListener("click", (event) => {
-                    if (event.target === dialog) {
-                        dialog.close();
-                    }
-                });
-            });
-        </script>
-
         <header>
             <nav>
                 <a href="/">
@@ -63,9 +46,9 @@ const nav = [
                 </a>
                 <ul>
                     {
-                        nav.map(({ href, text }) => (
-                            <li>
-                                <a href={href}>{text}</a>
+                        nav.map((link) => (
+                            <li class={active === link ? "active" : ""}>
+                                <a href={link.href}>{link.text}</a>
                             </li>
                         ))
                     }
@@ -90,11 +73,23 @@ const nav = [
 </html>
 
 <style>
+    body {
+        display: flex;
+        flex-direction: column;
+    }
     nav {
         display: flex;
+        gap: 0 1rem;
         align-items: center;
         justify-content: space-between;
         flex-wrap: wrap;
+    }
+
+    nav li {
+        border-bottom: 2px solid transparent;
+    }
+    nav .active {
+        border-color: currentColor;
     }
 
     nav h1 {

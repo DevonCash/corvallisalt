@@ -1,9 +1,0 @@
-name: Dummy Event
-description: This event exists to test the event collection.
-startDate: 2023-06-30T13:00:00Z
-endDate: 2023-06-30T15:00:00Z
-performer:
-    - church-ladies
-    - skeleton-boy
-location: calapooia-brewing
-keywords: [test, all-ages]

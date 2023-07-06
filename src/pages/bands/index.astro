@@ -28,7 +28,20 @@ const sorted = filtered.sort((a, b) => (a.data.name > b.data.name ? 1 : -1));
         </CollectionHeader>
         <section>
             <ul>
-                {sorted.map((band) => <Item item={band} />)}
+                {
+                    sorted.map((band) => (
+                        <Item item={band}>
+                            {!band.data.description && (
+                                <p class='cta'>
+                                    Know about this band? Send info to{" "}
+                                    <a href="mailto:contribute@corvallisalt.org">
+                                        contribute@corvallisalt.org
+                                    </a>
+                                </p>
+                            )}
+                        </Item>
+                    ))
+                }
             </ul>
         </section>
     </main>
@@ -37,5 +50,10 @@ const sorted = filtered.sort((a, b) => (a.data.name > b.data.name ? 1 : -1));
 <style>
     ul {
         padding-left: 0;
+    }
+
+    .cta {
+        font-size: smaller;
+        font-style: oblique;
     }
 </style>

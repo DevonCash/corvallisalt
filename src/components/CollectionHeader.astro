@@ -14,12 +14,10 @@ const { collection, filter } = Astro.props;
         <h2>
             {
                 filter && (
-                    <a class="filter" href={"/" + collection}>
-                        #{filter}
-                    </a>
+                    <a class="filter" href={"/" + collection}>{filter}</a>
                 )
             }
-            <span>{collection}</span>
+            <slot name="title">{collection}</slot>
         </h2>
     </hgroup>
     <slot/>
@@ -30,6 +28,14 @@ const { collection, filter } = Astro.props;
         text-transform: capitalize;
     }
 
+    .filter {
+        position: relative;
+    }
+    .filter::before {
+        content: '#';
+        position: absolute;
+        right: 100%;
+    }
     .filter:hover {
         text-decoration: line-through;
         text-decoration-color: var(--color);
