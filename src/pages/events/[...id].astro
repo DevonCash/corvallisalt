@@ -8,7 +8,6 @@ export const prerender = true;
 
 export async function getStaticPaths() {
     const pages = await getCollection("events");
-    console.log(pages);
     return pages.map((event) => ({
         params: { id: event.id },
         props: { event },

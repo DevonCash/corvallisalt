@@ -1,0 +1,33 @@
+---
+import { getCollection } from "astro:content";
+import { addQueryParam } from "src/utils";
+const { collection } = Astro.props;
+
+const keywords = (await getCollection(collection))
+    .map((doc) => doc.data.keywords)
+    .flat()
+    .filter((keyword, index, self) => self.indexOf(keyword) === index);
+
+const link = (keyword: string) => addQueryParam(Astro.url, "keywords", keyword);
+---
+
+<article>
+    <h5>Keywords</h5>
+    <ul>
+        {keywords.map((keyword) => <a href={link(keyword)}>{keyword}</a>)}
+    </ul>
+</article>
+
+<style>
+    ul {
+        display: flex;
+        flex-wrap: wrap;
+        list-style: none;
+    }
+    a {
+        margin: 0 0.3rem 0 0;
+    }
+    a::before {
+        content: "#";
+    }
+</style>

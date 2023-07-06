@@ -1,8 +1,8 @@
 ---
 import Item from "@components/Item.astro";
 import { getEntries } from "astro:content";
-import { formatISO } from "date-fns";
 import { format } from "src/utils";
+
 const { event } = Astro.props;
 
 if (!event.data.name) {
@@ -28,78 +28,71 @@ const cost = event.data.cost?.price ? "$" + event.data.cost.price : "Free";
             </a>
         </li>
         <li class="time">
-            <time
-                datetime={formatISO(event.data.startDate)}
-                set:html={format(
-                    event.data.startDate,
-                    "E '<span>'MMM d'</span>', h a"
-                )}
-            />
-        </li>
-        <li class="cost">
-            {cost}
-            {event.data?.cost?.suggested && " (suggested)"}
+            <time>
+                <a href={format(event.data.startDate, "'/events/'yyyy-MM#dd")}>
+                    {format(event.data.startDate, "MMM d,")}
+                </a>
+                <span>{format(event.data.startDate, "h a")}</span>
+            </time>
+            <li class="cost">
+                {cost}
+                {event.data?.cost?.suggested && " (suggested)"}
+            </li>
         </li>
     </ul>
+
+    <style>
+        ul {
+            list-style: none;
+            padding-left: 1.3rem;
+        }
+
+        ul a {
+            margin: 0;
+            display: inline-block;
+            margin-right: 0.3rem;
+        }
+
+        li {
+            position: relative;
+            margin: 0;
+            margin-left: 1rem;
+        }
+
+        li::before {
+            position: absolute;
+            right: 100%;
+            top: 3.5px;
+            margin-right: 0.3rem;
+            font-size: 0.8rem;
+            font-family: var(--title-font);
+        }
+
+        .bands::before {
+            content: "ft.";
+        }
+        .venue::before {
+            content: "at";
+        }
+
+        .time::before {
+            content: "on";
+        }
+        .bands a:not(:last-child)::after {
+            content: " ";
+        }
+
+        .cost::before {
+            content: "for";
+        }
+
+        small {
+            font-size: 0.8rem;
+            font-family: var(--title-font);
+        }
+
+        .keyword:not(:last-child)::after {
+            content: " ";
+        }
+    </style>
 </Item>
-
-<style>
-    ul {
-        list-style: none;
-        padding-left: 1.3rem;
-    }
-
-    ul a {
-        margin: 0;
-        display: inline-block;
-        margin-right: 0.3rem;
-    }
-
-    li {
-        position: relative;
-        margin: 0;
-        margin-left: 1rem;
-    }
-
-    li::before {
-        position: absolute;
-        right: 100%;
-        top: 3.5px;
-        margin-right: 0.3rem;
-        font-size: 0.8rem;
-        font-family: var(--title-font);
-    }
-
-    .bands::before {
-        content: "ft.";
-    }
-    .venue::before {
-        content: "at";
-    }
-
-    .time::before {
-        content: "on";
-    }
-    .bands a:not(:last-child)::after {
-        content: " ";
-    }
-
-    .cost::before {
-        content: "for";
-    }
-
-    small {
-        font-size: 0.8rem;
-        font-family: var(--title-font);
-    }
-
-    .keyword:not(:last-child)::after {
-        content: " ";
-    }
-</style>
-
-<style is:global>
-    .time span {
-        color: var(--primary);
-    }
-</style>

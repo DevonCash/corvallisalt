@@ -48,9 +48,9 @@ export function slugify(text: string) {
  * @returns The modified URL object.
  */
 export function addQueryParam(url: URL, key: string, value: string) {
-    if (url.searchParams.has(key)) url.searchParams.delete(key);
-    url.searchParams.append(key, value);
-    return url;
+  if (url.searchParams.has(key)) url.searchParams.delete(key);
+  url.searchParams.append(key, value);
+  return url;
 }
 
 /**
@@ -125,7 +125,8 @@ export async function queryEvents(query: object | URLSearchParams) {
   return events;
 }
 
-
-export function format( date: Date, format: string) {
-  return formatInTimeZone(date, 'America/Los_Angeles' ,format);
+export function format(date: Date, format: string) {
+  const timezone = import.meta.env.IANA_TIMEZONE;
+  if (!timezone) console.error("No timezone specified");
+  return formatInTimeZone(date, timezone, format);
 }

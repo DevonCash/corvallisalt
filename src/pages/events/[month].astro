@@ -1,11 +1,12 @@
 ---
 import PrimaryLayout from "@layouts/primary.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
-import { parse,  isBefore, subMonths, addMonths, format as rawFormat } from "date-fns";
+import { parse,  isBefore, subMonths, addMonths, format as rawFormat, startOfDay } from "date-fns";
 import CollectionHeader from "@components/CollectionHeader.astro";
-import MonthCalendar from "@components/MonthCalendar.svelte";
+import MonthCalendar from "@components/MonthCalendar.astro";
 import EventItem from "@components/EventItem.astro";
 import {format, addQueryParam, queryEvents } from "src/utils";
+import KeywordsFilterWidget from "@components/KeywordsFilterWidget.astro";
 export const prerender = false;
 
 type Event = CollectionEntry<"events">;
@@ -18,33 +19,19 @@ const month = parse(Astro.params.month, "yyyy-MM", new Date());
 const lastMonth = subMonths(month, 1);
 const nextMonth = addMonths(month, 1);
 
+// Set up filters
 const url = new URL(Astro.url);
 url.searchParams.append('in', Astro.params.month);
 const events = await queryEvents(url.searchParams)
-
-console.log(events);
-
 const filter = Astro.url.searchParams.get("keywords");
 
-const keywords = Array.from(new Set((await getCollection('events')).map(event => event.data.keywords).flat()))
-
-type DaySchedule = [Date, Event[]];
-const byDay = Object.entries(
-    events.reduce((acc: { [key: string]: Event[] }, event) => {
-        const day = format(event.data.startDate, "yyyy-MM-dd");
-        return {
-            ...acc,
-            [day]: [...(acc[day] || []), event],
-        };
-    }, {})
-)
-    .map(
-        ([day, events]): DaySchedule => [
-            parse(day, "yyyy-MM-dd", new Date()),
-            events,
-        ]
-    ) // Re-parse keys as dates;
-    .sort((a, b) => (isBefore(a[0], b[0]) ? -1 : 1)); // Sort by date
+const byDay = new Map<Date, Event[]>();
+for(const event of events) {
+    const day = startOfDay(event.data.startDate);
+    const dayEvents = byDay.get(day) || [];
+    dayEvents.push(event);
+    byDay.set(day, dayEvents);
+}
 
 ---
 
@@ -76,28 +63,17 @@ const byDay = Object.entries(
             </article>
             )}
             
-            {byDay.map(([day, events]) => (
+            {Array.from(byDay.entries()).map(([day, events]) => (
                 <section>
-                    <h3 id={rawFormat(day, "dd")}>{rawFormat(day, "EEEE, MMMM do")}</h3>
+                    <h3 id={format(day, "dd")}>{format(day, "EEEE, MMMM do")}</h3>
                     <ul>
-                        {events.map((event) => (
-                            <EventItem {event} />
-                        ))}
+                        {events.map((event) => (<EventItem {event} />))}
                     </ul>
                 </section>
             ))}
         </main>
         <aside id="sidebar">
-            {keywords.length > 0 &&
-         (   <article id="keywords">
-                <h5>Keywords</h5>
-                <ul>
-                    {keywords.map((keyword) => (
-                            <a href={addQueryParam(Astro.url, 'keyword', keyword)}>{keyword}</a>
-                    ))}
-                </ul>
-            </article>)
-        }
+            <KeywordsFilterWidget collection="events"/>
             <article>
                 <h5>Don't see your event?</h5>
                 <p>
@@ -186,19 +162,7 @@ const byDay = Object.entries(
         min-width: 300px;
     }
 
-    #keywords ul {
-        display: flex;
-        flex-wrap: wrap;
-        list-style: none;
-        padding: 0;
-
-    }
-    #keywords a {
-        margin: 0.2rem;
-    }
-    #keywords a::before {
-        content: "#";
-    }
+ 
 
     nav {
         margin-top :-2rem;

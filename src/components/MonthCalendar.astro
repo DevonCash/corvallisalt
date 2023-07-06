@@ -1,20 +1,18 @@
-<script lang="ts">
+---
   import {
     eachWeekOfInterval,
-    getMonth,
     addDays,
     formatISO,
     setDate,
     subDays,
     addMonths,
-    isToday,
     startOfDay,
+    isThisMonth,
   } from "date-fns";
   import { format } from "src/utils";
-  export let monthOf: Date;
-  export let events: Date[] = [];
 
-  const month = getMonth(monthOf);
+  const {monthOf, events} = Astro.props;
+  
   const firstDay = setDate(monthOf, 1);
   const lastDay = subDays(addMonths(firstDay, 1), 1);
   const weeks = eachWeekOfInterval(
@@ -22,20 +20,29 @@
     { weekStartsOn: 0 }
   );
   const days = weeks.map((firstDay) =>
-    Array.from({ length: 7 }, (_, i) => addDays(new Date(firstDay), i))
+    Array.from({ length: 7 }, (_, i) => addDays(firstDay, i))
   );
-  let byDay = events.reduce((acc: { [key: string]: Date[] }, event) => {
+  let byDay = events.reduce((acc: { [key: string]: Date[] }, event: Date) => {
     const day = startOfDay(event).toISOString();
     acc[day] = [...(acc[day] || []), event];
     return acc;
   }, {});
+
+---
+<table>
+
+<script >
+  import {isToday } from 'date-fns';
+  // Mark today
+    const times = document.querySelectorAll("td time");
+    for (const t of times) {
+      if(!isToday(new Date(t.getAttribute("datetime")))) continue;
+      const td = t.closest("td");
+      td.classList.add("today");
+      break;
+    }
 </script>
 
-<table>
-  <!-- <caption>
-    <span>{format(firstDay, "MMMM")}</span>
-    {format(firstDay, "yyyy")}
-  </caption> -->
   <thead>
     <tr>
       <th>Sun</th>
@@ -47,40 +54,29 @@
       <th>Sat</th>
     </tr>
   </thead><tbody>
-    {#each days as week}
+    { days.map( week => (
       <tr>
-        {#each week as day}
-          <td
-            class:today={isToday(day)}
-            class:inMonth={getMonth(day) === month}
-          >
-            {#if byDay[day.toISOString()]}
+        { week.map( day => (
+          <td class={ isThisMonth(day) ? 'inMonth' : ''}>
+            { byDay[day.toISOString()] ? (
               <a href={format(day, "#dd")}>
                 <time datetime={formatISO(day)}>{format(day, "d")}</time>
               </a>
-              <div class="events">
-                {#each byDay[day.toISOString()] || [] as _}
-                  <div class="event" />
-                {/each}
-              </div>
-            {:else}
+              <div class='events'>
+                {byDay[day.toISOString()].slice(0, 6).map( (_: any) => (<div />))}
+                </div>
+            ) : (
               <time datetime={formatISO(day)}>{format(day, "d")}</time>
-            {/if}
+            )}
           </td>
-        {/each}
+        ))}  
       </tr>
-    {/each}
+    ))}
   </tbody>
+
 </table>
 
 <style>
-  caption {
-    user-select: none;
-  }
-  caption span {
-    color: var(--primary);
-  }
-
   table {
     width: 300px;
     table-layout: fixed;
@@ -89,9 +85,8 @@
   td,
   th {
     user-select: none;
-
     text-align: center;
-    padding: 0.3rem 0;
+    padding: 0.3rem 0 .5rem;
     position: relative;
     z-index: 2;
   }
@@ -100,13 +95,9 @@
     border-bottom: 0;
     background-color: var(--color);
     color: var(--background);
+    padding-bottom: 0.3rem;
   }
 
-  td {
-    padding-bottom: 0.5rem;
-  }
-
-  .past,
   td:not(.inMonth) {
     opacity: 0.5;
   }
@@ -115,7 +106,7 @@
     border-color: var(--primary);
   }
 
-  .event {
+  .events > div {
     position: relative;
     width: 0.2rem;
     height: 0.2rem;

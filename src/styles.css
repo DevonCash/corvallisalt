@@ -220,3 +220,17 @@ form button {
 .tags a:not(:last-child)::after {
     content: ' ';
 }
+
+
+article {
+    border: 3px solid var(--light);
+    padding: 1.5rem 1rem;
+}
+
+article :first-child {
+    margin-top: 0;
+}
+
+article > ul {
+    padding-left: 0;
+}

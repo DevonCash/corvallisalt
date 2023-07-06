@@ -35,7 +35,7 @@ const contributors = defineCollection({
 const stringToDate = z
   .string()
   .regex(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g)
-  .transform((arg) => zonedTimeToUtc(arg, "America/Los_Angeles"));
+  .transform((arg) => zonedTimeToUtc(arg, import.meta.env.IANA_TIMEZONE));
   
 const events = defineCollection({
   type: "data",

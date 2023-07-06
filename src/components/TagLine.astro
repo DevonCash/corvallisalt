@@ -8,7 +8,7 @@ const { href, tags } = Astro.props;
         tags
             .sort()
             .map((tag: string) => (
-                <a href={addQueryParam(Astro.url, "keyword", tag)}>{tag}</a>
+                <a href={addQueryParam(Astro.url, "keywords", tag)}>{tag}</a>
             ))
     }
 </div>
