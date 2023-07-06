@@ -8,6 +8,8 @@
 
   const {monthOf, events} = Astro.props;
 
+  monthOf.setZone(import.meta.env.VITE_TIMEZONE as string);
+
   const firstDay = monthOf.startOf('month');
   const lastDay = monthOf.endOf('month');
   
@@ -37,7 +39,7 @@
   // Mark today
   const times = document.querySelectorAll("td time");
   for (const t of times) {
-    const day = DateTime.fromISO(t.getAttribute("datetime")).setZone("local");
+    const day = DateTime.fromISO(t.getAttribute("datetime"));
     if(!day.hasSame(DateTime.now(), 'day')) continue;
 
     t.closest("td").classList.add("today");
