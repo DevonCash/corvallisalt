@@ -1,6 +1,5 @@
 import { z, defineCollection, reference } from "astro:content";
-import { parse } from "date-fns";
-import { zonedTimeToUtc } from "date-fns-tz";
+import { DateTime } from "luxon";
 
 const keyword = z.string().regex(/^[a-z0-9-]+$/g);
 
@@ -34,9 +33,8 @@ const contributors = defineCollection({
 
 const stringToDate = z
   .string()
-  .regex(/\d{4}-\d{2}-\d{2} \d{2}:\d{2}/g)
-  .transform((arg) => zonedTimeToUtc(arg, import.meta.env.IANA_TIMEZONE));
-  
+  .transform((arg) => DateTime.fromISO(arg).toJSDate());
+
 const events = defineCollection({
   type: "data",
   schema: z.object({

@@ -1,7 +1,7 @@
 ---
 import Item from "@components/Item.astro";
 import { getEntries } from "astro:content";
-import { format } from "src/utils";
+import { DateTime } from "luxon";
 
 const { event } = Astro.props;
 
@@ -11,6 +11,9 @@ if (!event.data.name) {
 }
 
 const cost = event.data.cost?.price ? "$" + event.data.cost.price : "Free";
+
+const startDate = DateTime.fromJSDate(event.data.startDate);
+const doorDate = event.data.doorTime && DateTime.fromJSDate(event.data.doorTime);
 ---
 
 <Item item={event}>
@@ -29,14 +32,15 @@ const cost = event.data.cost?.price ? "$" + event.data.cost.price : "Free";
         </li>
         <li class="time">
             <time>
-                <a href={format(event.data.startDate, "'/events/'yyyy-MM#dd")}>
-                    {format(event.data.startDate, "MMM d,")}
+                <a href={"/events/" + startDate.toFormat("yyyy-MM#dd")}>
+                    {startDate.toFormat("MMM d,")}
                 </a>
-                <span>{format(event.data.startDate, "h a")}</span>
+                <span>{startDate.toFormat("h:mm a")}</span>
+                {doorDate && <small>({doorDate.toFormat('h:mm a')} Doors)</small>}
             </time>
             <li class="cost">
                 {cost}
-                {event.data?.cost?.suggested && " (suggested)"}
+                {event.data?.cost?.suggested && (<small>(suggested)</small>)}
             </li>
         </li>
     </ul>
@@ -86,10 +90,6 @@ const cost = event.data.cost?.price ? "$" + event.data.cost.price : "Free";
             content: "for";
         }
 
-        small {
-            font-size: 0.8rem;
-            font-family: var(--title-font);
-        }
 
         .keyword:not(:last-child)::after {
             content: " ";

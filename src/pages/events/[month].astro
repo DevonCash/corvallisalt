@@ -1,12 +1,12 @@
 ---
 import PrimaryLayout from "@layouts/primary.astro";
-import { getCollection, type CollectionEntry } from "astro:content";
-import { parse,  isBefore, subMonths, addMonths, format as rawFormat, startOfDay } from "date-fns";
+import type { CollectionEntry } from "astro:content";
 import CollectionHeader from "@components/CollectionHeader.astro";
 import MonthCalendar from "@components/MonthCalendar.astro";
 import EventItem from "@components/EventItem.astro";
-import {format, addQueryParam, queryEvents } from "src/utils";
+import {queryEvents } from "src/utils";
 import KeywordsFilterWidget from "@components/KeywordsFilterWidget.astro";
+import { DateTime } from "luxon";
 export const prerender = false;
 
 type Event = CollectionEntry<"events">;
@@ -15,9 +15,10 @@ if (!Astro.params.month) {
     return Astro.redirect("/events");
 }
 
-const month = parse(Astro.params.month, "yyyy-MM", new Date());
-const lastMonth = subMonths(month, 1);
-const nextMonth = addMonths(month, 1);
+const month = DateTime.fromFormat(Astro.params.month, "yyyy-MM", { zone: import.meta.env.VITE_IANA_TIMEZONE });
+
+const lastMonth = month.minus({ months: 1 });
+const nextMonth = month.plus({ months: 1 });
 
 // Set up filters
 const url = new URL(Astro.url);
@@ -25,9 +26,9 @@ url.searchParams.append('in', Astro.params.month);
 const events = await queryEvents(url.searchParams)
 const filter = Astro.url.searchParams.get("keywords");
 
-const byDay = new Map<Date, Event[]>();
+const byDay = new Map<DateTime, Event[]>();
 for(const event of events) {
-    const day = startOfDay(event.data.startDate);
+    const day = DateTime.fromJSDate(event.data.startDate).startOf('day');
     const dayEvents = byDay.get(day) || [];
     dayEvents.push(event);
     byDay.set(day, dayEvents);
@@ -36,17 +37,57 @@ for(const event of events) {
 ---
 
 <PrimaryLayout>
+    <script>
+        import {DateTime} from 'luxon';
+
+        // Update the "to today" link
+        const toToday = document.getElementById("to-today");
+        toToday.href = "#" + DateTime.local().toFormat('dd');
+
+        // Make sure there is a section for today, even if there are no events
+        const today = DateTime.local().startOf('day');
+        const sections = document.querySelectorAll('section[data-datetime]');
+        for(const section of sections) {
+            const sectionDate = DateTime.fromISO(section.dataset.datetime);
+            if(sectionDate.hasSame(today, 'day')) {
+                section.classList.add('today');
+                break;
+            };
+            if(sectionDate < today) continue;
+            const newSection = document.createElement('section');
+            newSection.classList.add('today');
+            newSection.setAttribute('data-datetime', today.toISO());
+            newSection.innerHTML = `<h3 id="${today.toFormat('dd')}">${today.toFormat('EEEE, MMMM d')}</h3><div>No events today</div>`;
+            section.before(newSection);
+        
+        }
+
+        // Flash the section header for the day you clicked an anchor for
+        window.addEventListener('hashchange', () => {
+            const hash = window.location.hash;
+            if(hash) {
+                const date = DateTime.fromFormat(hash.slice(1), 'dd');
+                const section = document.querySelector(`section[data-datetime="${date.toISO()}"]`);
+                if(section) {
+                    section.classList.add('flash');
+                    setTimeout(() => section.classList.remove('flash'), 1000);
+                }
+            }
+        })
+            </script>
     <CollectionHeader collection="events" {filter}>
         <span slot="title"
-            >Events <time>{format(month, "MMMM yyyy")}</time></span
+            >Events <time>{month.toFormat('LLLL yyyy')}</time>
+            <a id="to-today">scroll to today</a>
+            </span
         >
     </CollectionHeader>
         <nav>
-            <a href={format(lastMonth, "'/events/'yyyy-MM")}>
-                &larr; {format(lastMonth, "MMMM")}
+            <a href={"/events/" + lastMonth.toFormat('yyyy-MM')}>
+                &larr; {lastMonth.toFormat("LLLL")}
             </a>
-            <a href={format(nextMonth, "'/events/'yyyy-MM")}>
-                {format(nextMonth, "MMMM")} &rarr;
+            <a href={"/events/" + nextMonth.toFormat("yyyy-MM")}>
+                {nextMonth.toFormat( "LLLL")} &rarr;
             </a>
         </nav>
     <div>
@@ -64,8 +105,8 @@ for(const event of events) {
             )}
             
             {Array.from(byDay.entries()).map(([day, events]) => (
-                <section>
-                    <h3 id={format(day, "dd")}>{format(day, "EEEE, MMMM do")}</h3>
+                <section data-datetime={day.toISO()}>
+                    <h3 id={day.toFormat('dd')}>{day.toFormat("EEEE, MMMM d")}</h3>
                     <ul>
                         {events.map((event) => (<EventItem {event} />))}
                     </ul>
@@ -85,6 +126,26 @@ for(const event of events) {
         </aside>
     </div>
 </PrimaryLayout>
+
+<style is:global>
+    @keyframes flash {
+        0% {
+            background-color: var(--primary);
+            color: var(--light);
+        }
+        100% {
+            background-color: inherit;
+            color: inherit;
+        }
+    }
+    .flash h3 {
+        animation: flash 1s;
+    }
+
+    section.today h3::after {
+        content: ' (today)';
+    }
+</style>
 
 <style>
     div {
@@ -170,5 +231,17 @@ for(const event of events) {
         justify-content: space-between;
         align-items: center;
     }
+
+
+   
+
+    #to-today {
+        font-size: medium;
+        font-family: var(--font);
+        float: right;
+        margin-top: 1.3rem;
+        margin-bottom: 0;
+    }
+
 </style>
 

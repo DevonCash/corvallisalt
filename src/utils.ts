@@ -1,6 +1,5 @@
 import { getCollection, type CollectionEntry } from "astro:content";
-import { isFuture, isSameDay, isSameMonth, parse } from "date-fns";
-import { formatInTimeZone } from "date-fns-tz";
+import { DateTime } from "luxon";
 
 /**
  * Groups items in a list based on the provided predicates.
@@ -80,13 +79,19 @@ export async function queryEvents(query: object | URLSearchParams) {
     // Filter by month
     in: (terms: string[]) => (evt: Event) =>
       terms.every((term) =>
-        isSameMonth(parse(term, "yyyy-MM", new Date()), evt.data.startDate)
+        DateTime.fromFormat(term, "yyyy-MM").hasSame(
+          DateTime.fromJSDate(evt.data.startDate),
+          "month"
+        )
       ),
 
     // Filter by day
     on: (terms: string[]) => (evt: Event) =>
       terms.every((term) =>
-        isSameDay(parse(term, "yyyy-MM-dd", new Date()), evt.data.startDate)
+        DateTime.fromFormat(term, "yyyy-MM").hasSame(
+          DateTime.fromJSDate(evt.data.startDate),
+          "month"
+        )
       ),
 
     // Filter by cost
@@ -123,10 +128,4 @@ export async function queryEvents(query: object | URLSearchParams) {
   );
 
   return events;
-}
-
-export function format(date: Date, format: string) {
-  const timezone = import.meta.env.IANA_TIMEZONE;
-  if (!timezone) console.error("No timezone specified");
-  return formatInTimeZone(date, timezone, format);
 }

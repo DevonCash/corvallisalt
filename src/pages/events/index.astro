@@ -1,9 +1,11 @@
 ---
-import { format } from "src/utils";
+import { DateTime } from "luxon";
 
 export const prerender = false;
 
-const month = format(new Date(), "yyyy-MM", );
+const month = DateTime.now()
+    .setZone(import.meta.env.VITE_IANA_TIMEZONE)
+    .toFormat("yyyy-MM");
 
 return Astro.redirect("/events/" + month);
 ---

@@ -1,46 +1,48 @@
 ---
-  import {
-    eachWeekOfInterval,
-    addDays,
-    formatISO,
-    setDate,
-    subDays,
-    addMonths,
-    startOfDay,
-    isThisMonth,
-  } from "date-fns";
-  import { format } from "src/utils";
+  import { DateTime } from 'luxon';
+
+  interface Props {
+    monthOf: DateTime;
+    events: Date[];
+  }
 
   const {monthOf, events} = Astro.props;
-  
-  const firstDay = setDate(monthOf, 1);
-  const lastDay = subDays(addMonths(firstDay, 1), 1);
-  const weeks = eachWeekOfInterval(
-    { start: firstDay, end: lastDay },
-    { weekStartsOn: 0 }
-  );
-  const days = weeks.map((firstDay) =>
-    Array.from({ length: 7 }, (_, i) => addDays(firstDay, i))
-  );
-  let byDay = events.reduce((acc: { [key: string]: Date[] }, event: Date) => {
-    const day = startOfDay(event).toISOString();
-    acc[day] = [...(acc[day] || []), event];
-    return acc;
-  }, {});
 
+  const firstDay = monthOf.startOf('month');
+  const lastDay = monthOf.endOf('month');
+  
+  const weeks = [];
+
+  for( let i = firstDay.weekNumber; i <= lastDay.weekNumber; i++) {
+    weeks.push(
+      Array.from({length: 7}, (_, j) => monthOf.set({weekNumber: i, weekday: j}))
+    );
+  }
+  
+  const byDay = new Map<number, Date[]>();
+  for(const event of events) {
+    const day = DateTime.fromJSDate(event);
+    byDay.set(day.day, [...(byDay.get(day.day) || []), event]);
+  }
+  // const byDay = new Map<DateTime, Event[]>();
+  // for (const event of events) {
+  //   const day = startOfDay(;
+  //   byDay.set(day, [...(byDay.get(day) || []), event]);
+  // }
 ---
 <table>
 
 <script >
-  import {isToday } from 'date-fns';
+  import { DateTime } from 'luxon';
   // Mark today
-    const times = document.querySelectorAll("td time");
-    for (const t of times) {
-      if(!isToday(new Date(t.getAttribute("datetime")))) continue;
-      const td = t.closest("td");
-      td.classList.add("today");
+  const times = document.querySelectorAll("td time");
+  for (const t of times) {
+    const day = DateTime.fromISO(t.getAttribute("datetime"));
+    if(day.hasSame(DateTime.now(), 'day')) {
+      t.closest("td").classList.add("today");
       break;
     }
+  }
 </script>
 
   <thead>
@@ -54,20 +56,20 @@
       <th>Sat</th>
     </tr>
   </thead><tbody>
-    { days.map( week => (
+    { weeks.map( week => (
       <tr>
         { week.map( day => (
-          <td class={ isThisMonth(day) ? 'inMonth' : ''}>
-            { byDay[day.toISOString()] ? (
-              <a href={format(day, "#dd")}>
-                <time datetime={formatISO(day)}>{format(day, "d")}</time>
+          <td class={ day.month === monthOf.month ? 'inMonth' : ''}>
+           { day.month === monthOf.month && byDay.get(day.day) ? (
+              <a href={'#'+ day.toFormat('dd')}>
+                <time datetime={day.toISO()}>{day.day}</time>
               </a>
               <div class='events'>
-                {byDay[day.toISOString()].slice(0, 6).map( (_: any) => (<div />))}
+                {byDay.get(day.day)?.slice(0, 6).map( (_: any) => (<div />))}
                 </div>
             ) : (
-              <time datetime={formatISO(day)}>{format(day, "d")}</time>
-            )}
+              <time datetime={day.toISO()}>{day.day}</time>
+            )} 
           </td>
         ))}  
       </tr>

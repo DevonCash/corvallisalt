@@ -3,8 +3,8 @@ performer:
   - flexing
   - gossiphound
 location: corvallis-public-library
-startDate: 2023-07-03 20:00
-doorTime: 2023-07-03 19:30
+startDate: "2023-07-03T20:00-07"
+doorTime: "2023-07-03T19:30-07"
 cost:
   price: 10
   suggested: true
