@@ -1,9 +1,9 @@
 ---
-import { format } from "date-fns";
+import { format } from "src/utils";
 
 export const prerender = false;
 
-const month = format(new Date(), "yyyy-MM");
+const month = format(new Date(), "yyyy-MM", );
 
 return Astro.redirect("/events/" + month);
 ---

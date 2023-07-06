@@ -1,11 +1,11 @@
 ---
 import PrimaryLayout from "@layouts/primary.astro";
 import { getCollection, type CollectionEntry } from "astro:content";
-import { isSameMonth, parse, format, isBefore, subMonths, addMonths, parseISO } from "date-fns";
+import { parse,  isBefore, subMonths, addMonths } from "date-fns";
 import CollectionHeader from "@components/CollectionHeader.astro";
 import MonthCalendar from "@components/MonthCalendar.svelte";
 import EventItem from "@components/EventItem.astro";
-import { addQueryParam, queryEvents } from "src/utils";
+import {format, addQueryParam, queryEvents } from "src/utils";
 export const prerender = false;
 
 type Event = CollectionEntry<"events">;

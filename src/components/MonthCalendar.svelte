@@ -3,7 +3,6 @@
     eachWeekOfInterval,
     getMonth,
     addDays,
-    format,
     formatISO,
     setDate,
     subDays,
@@ -11,6 +10,7 @@
     isToday,
     startOfDay,
   } from "date-fns";
+  import { format } from "src/utils";
   export let monthOf: Date;
   export let events: Date[] = [];
 

@@ -1,5 +1,6 @@
 import { getCollection, type CollectionEntry } from "astro:content";
 import { isFuture, isSameDay, isSameMonth, parse } from "date-fns";
+import { formatInTimeZone } from "date-fns-tz";
 
 /**
  * Groups items in a list based on the provided predicates.
@@ -122,4 +123,9 @@ export async function queryEvents(query: object | URLSearchParams) {
   );
 
   return events;
+}
+
+
+export function format( date: Date, format: string) {
+  return formatInTimeZone(date, 'America/Los_Angeles' ,format);
 }

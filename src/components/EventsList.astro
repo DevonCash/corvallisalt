@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
-import {format, isToday, isThisWeek, isThisMonth, startOfWeek, endOfWeek} from 'date-fns';
+import {format} from 'src/utils';
+import { isToday, isThisWeek, isThisMonth, startOfWeek, endOfWeek} from 'date-fns';
 import { group } from 'src/utils';
 import EventItem from './EventItem.astro';
 
