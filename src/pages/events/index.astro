@@ -1,5 +1,11 @@
 ---
 import { format } from "date-fns";
+
+export const prerender = false;
+
 const month = format(new Date(), "yyyy-MM");
+
 return Astro.redirect("/events/" + month);
 ---
+
+<a href={"/events/" + month}>Redirecting to this month: {month}</a>
