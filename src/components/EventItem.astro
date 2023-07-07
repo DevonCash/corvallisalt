@@ -2,6 +2,7 @@
 import Item from "@components/Item.astro";
 import { getEntries } from "astro:content";
 import { DateTime } from "luxon";
+import cfg from "src/config";
 
 const { event } = Astro.props;
 
@@ -12,8 +13,11 @@ if (!event.data.name) {
 
 const cost = event.data.cost?.price ? "$" + event.data.cost.price : "Free";
 
-const startDate = DateTime.fromJSDate(event.data.startDate);
-const doorDate = event.data.doorTime && DateTime.fromJSDate(event.data.doorTime);
+const timezone = cfg.TIMEZONE;
+const startDate = DateTime.fromJSDate(event.data.startDate).setZone(timezone);
+const doorDate =
+    event.data.doorTime &&
+    DateTime.fromJSDate(event.data.doorTime).setZone(timezone);
 ---
 
 <Item item={event}>
@@ -36,11 +40,15 @@ const doorDate = event.data.doorTime && DateTime.fromJSDate(event.data.doorTime)
                     {startDate.toFormat("MMM d,")}
                 </a>
                 <span>{startDate.toFormat("h:mm a")}</span>
-                {doorDate && <small>({doorDate.toFormat('h:mm a')} Doors)</small>}
+                {
+                    doorDate && (
+                        <small>({doorDate.toFormat("h:mm a")} Doors)</small>
+                    )
+                }
             </time>
             <li class="cost">
                 {cost}
-                {event.data?.cost?.suggested && (<small>(suggested)</small>)}
+                {event.data?.cost?.suggested && <small>(suggested)</small>}
             </li>
         </li>
     </ul>
@@ -89,7 +97,6 @@ const doorDate = event.data.doorTime && DateTime.fromJSDate(event.data.doorTime)
         .cost::before {
             content: "for";
         }
-
 
         .keyword:not(:last-child)::after {
             content: " ";

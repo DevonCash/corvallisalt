@@ -4,10 +4,12 @@ import type { CollectionEntry } from "astro:content";
 import CollectionHeader from "@components/CollectionHeader.astro";
 import MonthCalendar from "@components/MonthCalendar.astro";
 import EventItem from "@components/EventItem.astro";
-import {queryEvents } from "src/utils";
+import { queryEvents } from "src/utils";
 import KeywordsFilterWidget from "@components/KeywordsFilterWidget.astro";
 import { DateTime } from "luxon";
+import cfg from 'src/config';
 export const prerender = false;
+
 
 type Event = CollectionEntry<"events">;
 
@@ -15,7 +17,7 @@ if (!Astro.params.month) {
     return Astro.redirect("/events");
 }
 
-const month = DateTime.fromFormat(Astro.params.month, "yyyy-MM", { zone: import.meta.env.VITE_IANA_TIMEZONE });
+const month = DateTime.fromFormat(Astro.params.month, "yyyy-MM", { zone: cfg.TIMEZONE });
 
 const lastMonth = month.minus({ months: 1 });
 const nextMonth = month.plus({ months: 1 });
@@ -63,7 +65,6 @@ for(const event of events) {
         }
 
         const flashHeading = () => {
-            console.log('flash');
             const hash = window.location.hash;
             if(!hash) return;
             const heading = document.getElementById(hash.slice(1));

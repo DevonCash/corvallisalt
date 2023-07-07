@@ -1,3 +1,4 @@
+import { getRuntime } from "@astrojs/cloudflare/runtime";
 import { getCollection, type CollectionEntry } from "astro:content";
 import { DateTime } from "luxon";
 
@@ -123,9 +124,13 @@ export async function queryEvents(query: object | URLSearchParams) {
       .map(([key, terms]) => (filterFns[key] ?? noop)(terms?.split(",")))
       .every((fn) => fn(event));
 
-  const events = await getCollection("events", (event) =>
-    query ? filter(event) : isFuture(event.data.startDate)
-  );
+  const events = await getCollection("events", (event) => filter(event));
 
   return events;
 }
+
+export const env = (Astro: any, key: string) => {
+  const { env } = getRuntime(Astro.request);
+
+  return (env as any)[key];
+};

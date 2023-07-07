@@ -31,9 +31,10 @@ const contributors = defineCollection({
   }),
 });
 
-const stringToDate = z
-  .string()
-  .transform((arg) => DateTime.fromISO(arg).toJSDate());
+const stringToDate = z.string().transform((arg) => {
+  const date = DateTime.fromISO(arg).toJSDate();
+  return date;
+});
 
 const events = defineCollection({
   type: "data",

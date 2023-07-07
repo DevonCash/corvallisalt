@@ -1,6 +1,6 @@
 ---
   import { DateTime } from 'luxon';
-
+  import cfg from 'src/config';
   interface Props {
     monthOf: DateTime;
     events: Date[];
@@ -8,7 +8,7 @@
 
   const {monthOf, events} = Astro.props;
 
-  monthOf.setZone(import.meta.env.VITE_TIMEZONE as string);
+  monthOf.setZone(cfg.TIMEZONE);
 
   const firstDay = monthOf.startOf('month');
   const lastDay = monthOf.endOf('month');
@@ -21,19 +21,21 @@
     );
   }
   
-  const byDay = new Map<number, Date[]>();
-  for(const event of events) {
-    const day = DateTime.fromJSDate(event);
-    byDay.set(day.day, [...(byDay.get(day.day) || []), event]);
+  const byDay = new Map<number, DateTime[]>();
+  for(let event of events) {
+    const datetime = DateTime.fromJSDate(event);
+    const {day} = datetime
+    byDay.set(day, [...(byDay.get(day) || []), datetime]);
   }
 ---
 <table>
 
 <script >
   import { DateTime } from 'luxon';
+  import cfg from 'src/config';
   // Mark today
   const times = document.querySelectorAll("td time");
-  const today = DateTime.now().setZone(import.meta.env.VITE_IANA_TIMEZONE as string);
+  const today = DateTime.now().setZone(cfg.TIMEZONE);
   for (const t of times) {
     const day = DateTime.fromISO(t.getAttribute("datetime"));
     if(!today.hasSame(day, 'day')) continue;
