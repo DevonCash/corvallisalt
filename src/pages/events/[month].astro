@@ -30,7 +30,7 @@ const filter = Astro.url.searchParams.get("keywords");
 
 const byDay = new Map<DateTime, Event[]>();
 for(const event of events) {
-    const day = DateTime.fromJSDate(event.data.startDate).startOf('day');
+    const day = DateTime.fromJSDate(event.data.startDate, {zone: cfg.TIMEZONE}).startOf('day');
     const dayEvents = byDay.get(day) || [];
     dayEvents.push(event);
     byDay.set(day, dayEvents);
