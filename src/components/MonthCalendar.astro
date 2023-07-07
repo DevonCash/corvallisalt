@@ -23,7 +23,7 @@
   
   const byDay = new Map<number, DateTime[]>();
   for(let event of events) {
-    const datetime = DateTime.fromJSDate(event);
+    const datetime = DateTime.fromJSDate(event, {zone: cfg.TIMEZONE});
     const {day} = datetime
     byDay.set(day, [...(byDay.get(day) || []), datetime]);
   }
