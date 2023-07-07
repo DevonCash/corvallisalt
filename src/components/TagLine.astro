@@ -1,21 +1,16 @@
 ---
 import { addQueryParam } from "src/utils";
-const { href, tags } = Astro.props;
+const { tags } = Astro.props;
+
+const link = (tag: string) => addQueryParam(Astro.url, "keywords", tag);
 ---
 
-<div class="tags">
+<div>
     {
-        tags
-            .sort()
-            .map((tag: string) => (
-                <a href={addQueryParam(Astro.url, "keywords", tag)}>{tag}</a>
-            ))
+        tags.sort().map((tag: string) => (
+            <a class="tag" href={link(tag)}><!--
+                --!>{tag}
+            </a>
+        ))
     }
 </div>
-
-<style>
-    a {
-        display: inline-block;
-        margin: 0 0 0 0.25rem;
-    }
-</style>

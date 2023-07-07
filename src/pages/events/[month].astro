@@ -78,20 +78,19 @@ for(const event of events) {
         flashHeading();
     </script>
     <CollectionHeader collection="events" {filter}>
-        <span slot="title"
-            >Events <time>{month.toFormat('LLLL yyyy')}</time>
-            <a id="to-today">scroll to today</a>
-            </span
-        >
+        <astro:fragment slot="title">
+            Events <time class="alt">{month.toFormat('LLLL yyyy')}</time>
+        </astro:fragment>
+        <a id="to-today">scroll to today</a>
     </CollectionHeader>
-        <nav>
-            <a href={"/events/" + lastMonth.toFormat('yyyy-MM')}>
-                &larr; {lastMonth.toFormat("LLLL")}
-            </a>
-            <a href={"/events/" + nextMonth.toFormat("yyyy-MM")}>
-                {nextMonth.toFormat( "LLLL")} &rarr;
-            </a>
-        </nav>
+    <nav>
+        <a href={"/events/" + lastMonth.toFormat('yyyy-MM')}>
+            &larr; {lastMonth.toFormat("LLLL")}
+        </a>
+        <a href={"/events/" + nextMonth.toFormat("yyyy-MM")}>
+            {nextMonth.toFormat( "LLLL")} &rarr;
+        </a>
+    </nav>
     <div>
         <aside id="calendar">
             <MonthCalendar
@@ -115,9 +114,9 @@ for(const event of events) {
                 </section>
             ))}
         </main>
-        <aside id="sidebar">
+        <aside class="sidebar">
             <KeywordsFilterWidget collection="events"/>
-            <article>
+            <article class="widget">
                 <h5>Don't see your event?</h5>
                 <p>
                     Let us know at <a href="mailto:contribute@corvallisalt.org"
@@ -165,8 +164,6 @@ for(const event of events) {
         gap: 2rem;
     }
 
-
-
     main {
         grid-area: main;
         flex: 1 0 300px;
@@ -199,39 +196,16 @@ for(const event of events) {
         align-items: center;
     }
 
-    #sidebar {
+    .sidebar {
         grid-area: aside;
         display: flex;
         flex-direction: column;
         margin: 0;
     }
 
-    article {
-        border: 3px solid var(--light);
-        padding: 1.5rem 1rem;
-    }
-
-    article :first-child {
-        margin-top: 0;
-    }
-
     main ul {
         padding: 0 1rem;
     }
-
-    time {
-        color: var(--primary);
-        font-size: smaller;
-        font-family: var(--font);
-        white-space: nowrap;
-    }
-
-    main {
-        width: unset;
-        min-width: 300px;
-    }
-
- 
 
     nav {
         margin-top :-2rem;
@@ -240,16 +214,11 @@ for(const event of events) {
         align-items: center;
     }
 
+    #to-today {
+        margin: 0;
+    }
 
    
-
-    #to-today {
-        font-size: medium;
-        font-family: var(--font);
-        float: right;
-        margin-top: 1.3rem;
-        margin-bottom: 0;
-    }
 
 </style>
 

@@ -11,7 +11,7 @@ const keywords = (await getCollection(collection))
 const link = (keyword: string) => addQueryParam(Astro.url, "keywords", keyword);
 ---
 
-<article>
+<article class='widget'>
     <h5>Keywords</h5>
     <ul>
         {keywords.map((keyword) => <a href={link(keyword)}>{keyword}</a>)}

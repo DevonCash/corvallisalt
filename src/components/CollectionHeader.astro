@@ -1,12 +1,10 @@
 ---
-
 interface Props {
     collection: any;
     filter: string | null;
 }
 
 const { collection, filter } = Astro.props;
-
 ---
 
 <header>
@@ -14,13 +12,14 @@ const { collection, filter } = Astro.props;
         <h2>
             {
                 filter && (
-                    <a class="filter" href={"/" + collection}>{filter}</a>
+                    <a class="alt filter" href={"/" + collection}><!--
+                        --!>{filter}</a>
                 )
             }
             <slot name="title">{collection}</slot>
         </h2>
     </hgroup>
-    <slot/>
+    <slot />
 </header>
 
 <style>
@@ -32,7 +31,7 @@ const { collection, filter } = Astro.props;
         position: relative;
     }
     .filter::before {
-        content: '#';
+        content: "#";
         position: absolute;
         right: 100%;
     }
@@ -42,8 +41,11 @@ const { collection, filter } = Astro.props;
     }
 
     header {
-        border-bottom: 3px solid lightgray;
+        border-bottom: 3px solid;
         margin-bottom: 2rem;
-        padding-bottom: .5rem;
+        padding-bottom: 0.5rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-end;
     }
 </style>
