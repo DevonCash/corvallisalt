@@ -1,7 +1,7 @@
 import { z, defineCollection, reference } from "astro:content";
 import { DateTime } from "luxon";
 
-const keyword = z.string().regex(/^[a-z0-9-]+$/g);
+const keyword = z.string().regex(/^[a-z0-9-+]+$/g);
 
 const bands = defineCollection({
   type: "data",
@@ -19,7 +19,7 @@ const venues = defineCollection({
   schema: z.object({
     name: z.string(),
     description: z.string(),
-    url: z.string().url(),
+    url: z.string().url().optional(),
     keywords: z.array(keyword),
   }),
 });
@@ -53,7 +53,8 @@ const events = defineCollection({
     image: z.string().url().optional(),
     cost: z
       .object({
-        price: z.number().min(0),
+        price: z.number().min(0).optional(),
+        range: z.array(z.number().min(0)).optional(),
         suggested: z.boolean().optional(),
       })
       .optional(),

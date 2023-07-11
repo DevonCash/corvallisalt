@@ -10,7 +10,6 @@ export async function getStaticPaths() {
     const pages = await getCollection("events");
     return pages.map((event) => {
         const [month, ...id] = event.id.split("/");
-        console.log(month, id);
         return {
             params: { month, id: id.join('/') },
             props: { event },

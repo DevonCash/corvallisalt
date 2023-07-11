@@ -28,12 +28,12 @@ url.searchParams.append('in', Astro.params.month);
 const events = await queryEvents(url.searchParams)
 const filter = Astro.url.searchParams.get("keywords");
 
-const byDay = new Map<DateTime, Event[]>();
+const byDay = new Map<string, Event[]>();
 for(const event of events) {
     const day = DateTime.fromJSDate(event.data.startDate, {zone: cfg.TIMEZONE}).startOf('day');
-    const dayEvents = byDay.get(day) || [];
+    const dayEvents = byDay.get(day.toISO() as string) || [];
     dayEvents.push(event);
-    byDay.set(day, dayEvents);
+    byDay.set(day.toISO() as string, dayEvents);
 }
 
 ---
@@ -41,16 +41,22 @@ for(const event of events) {
 <PrimaryLayout>
     <script>
         import {DateTime} from 'luxon';
+        import cfg from 'src/config';
+
+        const str = location.pathname.split('/')[2];
+        console.log(str);
+        const month = DateTime.fromFormat(str, "yyyy-MM", { zone: cfg.TIMEZONE });
 
         // Update the "to today" link
         const toToday = document.getElementById("to-today");
         toToday.href = "#" + DateTime.local().toFormat('dd');
 
         // Make sure there is a section for today, even if there are no events
-        const today = DateTime.local().startOf('day');
+        const today = DateTime.now().startOf('day');
+        if(today.hasSame(month, 'month')) {
         const sections = document.querySelectorAll('section[data-datetime]');
         for(const section of sections) {
-            const sectionDate = DateTime.fromISO(section.dataset.datetime);
+            const sectionDate = DateTime.fromISO(section.dataset.datetime).setZone(cfg.TIMEZONE);
             if(sectionDate.hasSame(today, 'day')) {
                 section.classList.add('today');
                 break;
@@ -61,9 +67,10 @@ for(const event of events) {
             newSection.setAttribute('data-datetime', today.toISO());
             newSection.innerHTML = `<h3 id="${today.toFormat('dd')}">${today.toFormat('EEEE, MMMM d')}</h3><div>No events today</div>`;
             section.before(newSection);
+            break;
         
         }
-
+        }
         const flashHeading = () => {
             const hash = window.location.hash;
             if(!hash) return;
@@ -105,14 +112,17 @@ for(const event of events) {
             </article>
             )}
             
-            {Array.from(byDay.entries()).map(([day, events]) => (
-                <section data-datetime={day.toISO()}>
-                    <h3 id={day.toFormat('dd')}>{day.toFormat("EEEE, MMMM d")}</h3>
+            {Array.from(byDay.entries()).map(([day, events]) => {
+                events = events.sort((a, b) => a.data.startDate.valueOf() - b.data.startDate.valueOf());
+                const date = DateTime.fromISO(day);
+                return (
+                <section data-datetime={day}>
+                    <h3 id={date.toFormat('dd')}>{date.toFormat("EEEE, MMMM d")}</h3>
                     <ul>
                         {events.map((event) => (<EventItem {event} />))}
                     </ul>
                 </section>
-            ))}
+                )})}
         </main>
         <aside class="sidebar">
             <KeywordsFilterWidget collection="events"/>
@@ -208,7 +218,8 @@ for(const event of events) {
     }
 
     nav {
-        margin-top :-2rem;
+        margin-top: -.5rem;
+        margin-bottom: 1rem;
         display: flex;
         justify-content: space-between;
         align-items: center;

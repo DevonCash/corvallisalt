@@ -1,8 +1,7 @@
 ---
 import { addQueryParam } from "src/utils";
-const { tags } = Astro.props;
-
-const link = (tag: string) => addQueryParam(Astro.url, "keywords", tag);
+const { tags, href } = Astro.props;
+const link = (tag: string) => addQueryParam(href ? new URL(Astro.url.origin + href) : Astro.url, "keywords", tag);
 ---
 
 <div>

@@ -1,0 +1,14 @@
+---
+import CollectionLayout from "@layouts/collection.astro";
+export const prerender = true;
+export function getStaticPaths() {
+    return [
+        { params: { collection: "bands" } },
+        { params: { collection: "venues" } },
+    ];
+}
+
+const { collection } = Astro.params;
+---
+
+<CollectionLayout {collection} />

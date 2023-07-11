@@ -1,0 +1,152 @@
+---
+import PrimaryLayout from "./primary.astro";
+import CollectionHeader from "@components/CollectionHeader.astro";
+import Item from "@components/Item.astro";
+import { getCollection } from "astro:content";
+import KeywordsFilterWidget from "@components/KeywordsFilterWidget.astro";
+
+const { collection } = Astro.props;
+const items = await getCollection(collection);
+
+const filter = Astro.url.searchParams.get("keywords");
+const filtered = !filter
+    ? items
+    : items.filter((item) => item.data.keywords.includes(filter));
+
+const sorted = filtered.sort((a, b) => (a.data.name > b.data.name ? 1 : -1));
+---
+
+<PrimaryLayout>
+    <main>
+        <CollectionHeader {collection} {filter} />
+        <section>
+            <ul>
+                {
+                    sorted.map((item) => (
+                        <slot name="item">
+                            <Item item={item}>
+                                {!item.data.description && (
+                                    <p class="cta">
+                                        Know about this band? Send info to{" "}
+                                        <a href="mailto:contribute@corvallisalt.org">
+                                            contribute@corvallisalt.org
+                                        </a>
+                                    </p>
+                                )}
+                            </Item>
+                        </slot>
+                    ))
+                }
+            </ul>
+        </section>
+        <aside class="sidebar">
+            <!-- <form class="search widget" method="get">
+                <input
+                    id="search"
+                    type="search"
+                    name="search"
+                    placeholder="Search..."
+                    value={Astro.url.searchParams.get("search")}
+                    autocomplete="off"
+                />
+                <label for="search"> Search</label>
+            </form> -->
+            <KeywordsFilterWidget {collection} />
+            <article class="widget">
+                <h5>Missing your favorite?</h5>
+                <p>
+                    Let us know at <a href="mailto:contribute@corvallisalt.org"
+                        >contribute@corvallisalt.org</a
+                    >
+                </p>
+            </article>
+        </aside>
+    </main>
+
+    <style>
+        ul {
+            padding-left: 0;
+        }
+
+        main {
+            max-width: 960px;
+            min-width: 60%;
+            margin: 0 auto;
+
+            position: relative;
+            display: grid;
+            grid-template-areas: "content-header content-header" "content sidebar";
+            grid-template-rows: auto auto;
+            grid-template-columns: 1fr 300px;
+            gap: 1rem 2rem ;
+        }
+
+        form input {
+            background: var(--background);
+            color: var(--primary);
+            border: none;
+            border-bottom: 1px solid var(--primary);
+            padding: 0.5rem;
+            width: 100%;
+            margin: 0;
+        }
+
+        form {
+            padding: 0;
+        }
+
+        label {
+            position: relative;
+            /* padding-top: 1rem; */
+        }
+
+        input:focus {
+            outline: none;
+        }
+
+        input:not(:placeholder-shown) + label,
+        input:focus + label {
+            transform: translateY(-1.1rem);
+            font-size: 0.75rem;
+            color: var(--primary);
+        }
+
+
+        input:not(:placeholder-shown),
+        input:focus {
+            border: 1px solid var(--primary);
+        }
+
+        input + label {
+            float:left;
+            top: -2.5rem;
+            margin: 0 .2rem;
+            padding: .2rem;
+            
+            pointer-events: none;
+
+            transition: transform 0.2s ease, font-size 0.2s ease, color 0.2s ease;
+            will-change: transform, font-size, color;
+            
+            font-size: larger;
+            font-family: var(--title-font);
+            background: var(--background);
+        }
+
+        form input {
+            border: 1px solid transparent;
+            border-bottom: 1px solid var(--primary);
+            box-sizing: border-box;
+            display: block;
+        }
+
+        form input::placeholder {
+            color: transparent;
+        }
+
+        .sidebar {
+            position: sticky;
+            top: 0;
+        }
+    </style>
+</PrimaryLayout>

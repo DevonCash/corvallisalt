@@ -1,0 +1,48 @@
+---
+import PrimaryLayout from "@layouts/primary.astro";
+import { getCollection, getEntry } from "astro:content";
+import EventsList from "@components/EventsList.astro";
+import Item from "@components/Item.astro";
+
+export const prerender = true;
+
+export async function getStaticPaths() {
+    return [
+        ...(await getCollection("bands")).map((item) => ({
+            params: { collection: "bands", id: item.id },
+        })),
+        ...(await getCollection("venues")).map((item) => ({
+            params: { collection: "venues", id: item.id },
+        })),
+    ];
+}
+
+export interface Params {
+    collection: string;
+    id: string;
+}
+
+const { collection, id } = Astro.params;
+const item = await getEntry(collection, id);
+const events = await getCollection("events", ({ data }) =>
+    collection === "bands"
+        ? data.performer.find((p) => p.id === id)
+        : data.location?.id === id
+);
+---
+
+<PrimaryLayout>
+    <main>
+        <Item {item}>
+            {
+                item?.data.url && (
+                    <div>
+                        <a href={item.data.url}>{item.data.url}</a>
+                    </div>
+                )
+            }
+        </Item>
+
+        <EventsList events={events} />
+    </main>
+</PrimaryLayout>

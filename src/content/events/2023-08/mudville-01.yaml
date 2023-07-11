@@ -1,0 +1,11 @@
+performer:
+  - body-double
+  - yuvees
+  - who-brought-opie
+location: mudville-stadium
+startDate: "2023-08-01T19:30-07"
+doorsDate: "2023-08-01T19:00-07"
+keywords: [corvallis, all-ages, substance-free, masks-required]
+cost:
+  range: [7, 10]
+  suggested: true

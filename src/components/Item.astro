@@ -12,7 +12,7 @@ const { item } = Astro.props;
         </h4>
         <TagLine
             tags={item.data.keywords}
-            href={"/" + item.collection + "/?keyword="}
+            href={"/" + item.collection}
         />
     </hgroup>
     <p>{item.data.description}</p>

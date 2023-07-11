@@ -21,7 +21,7 @@ const grouped = group(events, timeGroups);
     Object.entries(grouped).filter(([_, evts]) => evts.length > 0).map(([group, evts]) => (
         <section>
             <hgroup>
-                <h3>{group}</h3>
+                <h4>{group}</h4>
             </hgroup>
             <ul>
                 {evts.map((event) => (<EventItem {event} />))}

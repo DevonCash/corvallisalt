@@ -11,7 +11,11 @@ if (!event.data.name) {
     event.data.name = bands.map((band: any) => band.data.name).join(", ");
 }
 
-const cost = event.data.cost?.price ? "$" + event.data.cost.price : "Free";
+const cost = event.data.cost?.price 
+    ? "$" + event.data.cost.price 
+    : event.data.range 
+    ? `$${event.data.range[0]} - $${event.data.range[1]}`
+    : "Free";
 
 const timezone = cfg.TIMEZONE;
 const startDate = DateTime.fromJSDate(event.data.startDate).setZone(timezone);
@@ -80,7 +84,7 @@ const doorDate =
             font-family: var(--title-font);
             width: 1rem;
             text-align: center;
-            padding: 0 .2rem;
+            padding: 0 0.2rem;
         }
 
         .bands::before {
